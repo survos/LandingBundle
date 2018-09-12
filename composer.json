@@ -14,7 +14,7 @@
     ],
     "autoload": {
         "psr-4": {
-            "Survos\\WorkflowBundle\\": "src/"
+            "Survos\\LandingBundle\\": "src/"
         }
     },
     "extra": {
