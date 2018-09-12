@@ -3,7 +3,9 @@
     "description": "Add a landing and login page to a Symfony4 application",
     "type": "symfony-bundle",
     "require": {
-        "symfony/workflow": "^4.1"
+        "symfony/workflow": "^4.1",
+        "knplabs/knp-menu-bundle": "^2.0",
+        "twig/twig": "^2.5"
     },
     "license": "MIT",
     "authors": [
