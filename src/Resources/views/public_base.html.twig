@@ -12,8 +12,10 @@
     <title>{% block title %}{{ app.request.baseUrl }}{% endblock %}</title>
 
     {% block stylesheets %}
+        {# this is if webpack is enabled
         <link rel="stylesheet" href="{{ asset('build/css/app.css') }}">
         <link rel="stylesheet" href="{{ asset('build/css/news.css') }}">
+        #}
         {#
         <link href="{{ asset('/build/css/sb-admin.css') }}" rel="stylesheet">
         #}
@@ -63,6 +65,29 @@
 
     {% block body %}
         {% block navbar %}
+
+            <div class="navbar navbar-default navbar-fixed-top">
+                <div class="container-fluid">
+                    {# Brand and toggle get grouped for better mobile display #}
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#admin-navbar-collapse-1">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <a class="navbar-brand" href="#">{{ _self }}</a>
+                    </div>
+
+                    {# Collect the nav links, forms, and other content for toggling #}
+                    <div class="collapse navbar-collapse" id="admin-navbar-collapse-1">
+                        {{ knp_menu_render('landing_menu', {'currentClass': 'active', 'template': 'SurvosLandingBundle::knp_menu.html.twig'}) }}
+                        {{ knp_menu_render('test_menu', {'currentClass': 'active', 'template': 'SurvosLandingBundle::knp_menu.html.twig'}) }}
+                    </div>
+                </div>
+            </div>
+
+
             <div class="navbar navbar-default navbar-fixed-top">
                 <div class="container-fluid">
                     {# Brand and toggle get grouped for better mobile display #}
