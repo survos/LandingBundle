@@ -62,7 +62,6 @@
             <div class="col-lg-4">
                 <h1>{{ app.request.baseUrl }}</h1>
                 <p>{{ title|default(app.request.server.get('SERVER_NAME')|default('site message')) }} Description</p>
-                <a class="btn btn-primary btn-lg" href="#">Call to Action!</a>
             </div>
 
             <!-- /.col-md-4 -->
@@ -78,20 +77,6 @@
 
         <!-- Content Row -->
         <div class="row">
-            <div class="col-md-4 mb-4">
-                <div class="card h-100">
-                    <div class="card-body">
-                        <h2 class="card-title">Dashboard</h2>
-                        <p class="card-text">The first dashboard is based on SB Admin</p>
-                    </div>
-                    <div class="card-footer">
-                        {#
-                        <a href="{{ path('dashboard') }}" class="btn btn-primary">Dashboard</a>
-                        <a href="{{ path('survos_workflows') }}" class="btn btn-primary">Workflows</a>
-                        #}
-                    </div>
-                </div>
-            </div>
             <!-- /.col-md-4 -->
             <div class="col-md-4 mb-4">
                 <div class="card h-100">
@@ -127,7 +112,7 @@
     <!-- Footer -->
     <footer class="py-5 bg-dark">
         <div class="container">
-            <p class="m-0 text-center text-white">Copyright &copy; Your Website 2017</p>
+            <p class="m-0 text-center text-white">Copyright &copy; </p>
         </div>
         <!-- /.container -->
     </footer>
