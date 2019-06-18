@@ -36,6 +36,9 @@ class LandingMenuBuilder
     {
 
         $menu = $this->factory->createItem('root');
+        // hack?  Seems like this should be in the renderer.  Top Level ul tag
+        $menu->setChildrenAttribute('class', 'nav navbar-nav');
+
         $menu->addChild(
             'linking',
             [
@@ -100,6 +103,14 @@ class LandingMenuBuilder
         $menu->addChild('Employees', array('uri' => '#acme_hello_employees'))
             ->setAttribute('icon', 'fa fa-group');
         */
+
+        $menu->setChildrenAttribute('class', 'navbar-nav');
+// menu items
+        foreach ($menu as $child) {
+            $child->setLinkAttribute('class', 'nav-link')
+                ->setAttribute('class', 'nav-item');
+        }
+
         return $menu;
     }
 }
