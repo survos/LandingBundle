@@ -54,7 +54,7 @@
         {# adding classes for dropdown #}
         {%- if is_dropdown %}
             {%- set classes = classes|merge(['dropdown']) %}
-            {%- set childrenClasses = childrenClasses|merge(['dropdown-menu']) %}
+            {%- set childrenClasses = childrenClasses|merge(['dropdown-item']) %}
         {%- endif %}
 
         {# putting classes together #}
@@ -138,7 +138,8 @@
     {{ ownmacro.setCssClassAttribute(item, 'LabelAttribute', 'dropdown-header') }}
     <div {{ macros.attributes(item.labelAttributes) }}>
         {% if item.attribute('icon') is not empty  %}
-            <i class="{{ item.attribute('icon') }}"></i>
+            <i class="{{ item.attribute('icon') }}">   </i>
+            {{ item.attribute('icon')  }}
         {% endif %}
         {{ block('label') }}
     </div>
