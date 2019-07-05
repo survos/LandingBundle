@@ -9,8 +9,9 @@ use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 class LandingMenuBuilder
 {
-    private $factory;
-    private $authorizationChecker;
+    /* protected, so that subclasses can use it. */
+    protected $factory;
+    protected $authorizationChecker;
 
     /**
      * @param FactoryInterface $factory
@@ -179,7 +180,7 @@ class LandingMenuBuilder
         // return $menu;
     }
 
-    private function cleanupMenu(ItemInterface $menu): ItemInterface
+    public function cleanupMenu(ItemInterface $menu): ItemInterface
     {
 
         $menu->setChildrenAttribute('class', 'navbar-nav');
