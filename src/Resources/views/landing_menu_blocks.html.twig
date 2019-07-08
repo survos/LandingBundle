@@ -12,7 +12,6 @@
 
 {% block item %}
     <h1>Item</h1>
-    {{ dump(item) }}
 {% endblock %}
 
 {% block list %}
@@ -25,9 +24,7 @@
                     <div class="card h-100">
                         <div class="card-body">
                             <h2 class="card-title">
-
                                 {{ block('label') }}
-
                             </h2>
                             <p class="card-text">{{ "landing.%s.description"|format(item.name)|trans }}</p>
                         </div>
