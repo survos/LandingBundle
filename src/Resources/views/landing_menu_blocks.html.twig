@@ -24,8 +24,6 @@
                 <div class="col-md-4 mb-4">
                     <div class="card h-100">
                         <div class="card-body">
-                            <h1>Child</h1>
-
                             <h2 class="card-title">
 
                                 {{ block('label') }}
@@ -34,7 +32,6 @@
                             <p class="card-text">{{ "landing.%s.description"|format(item.name)|trans }}</p>
                         </div>
                         <div class="card-footer">
-                            {{ dump(item) }}
                             {{ block('linkElement') }}
 
                             <a href="{{ item.uri }}" class="btn btn-primary">Go</a>
