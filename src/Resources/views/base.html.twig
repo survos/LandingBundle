@@ -19,6 +19,7 @@
 </head>
 
 <body>
+
 {% include "@SurvosLanding/navbar.html.twig" %}
 
 {% block flashMessages %}
@@ -30,9 +31,13 @@
     {% endfor %}
 {% endblock %}
 
+<!-- Page Content -->
+<div class="container">
 {% block body %}
     Content goes here, must have a <code>body</code> block.
 {% endblock %}
+</div>
+
 </body>
 
 {% block javascripts %}

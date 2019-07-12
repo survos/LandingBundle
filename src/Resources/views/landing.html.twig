@@ -1,6 +1,6 @@
-{% extends "@SurvosLanding/public_base.html.twig" %}
+{% extends ['base.html.twig', "SurvosLandingBundle::base.html.twig"] %}
 
-{% block title "Survos Landing" %}
+{% block title "Default Survos Landing Page" %}
 
 {% block test_navbar %}
     {% set menuHtml %}
@@ -89,7 +89,7 @@
 </xnav>
 {% endblock %}
 
-{% block content %}
+{% block body %}
 
     <!-- Page Content -->
     <div class="container">
@@ -165,6 +165,3 @@
 
 {% endblock %}
 
-{% block xxstylesheets %}
-    <link href="https://blackrockdigital.github.io/startbootstrap-small-business/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-{% endblock %}
