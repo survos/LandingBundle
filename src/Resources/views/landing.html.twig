@@ -120,36 +120,7 @@
             </div>
         </div>
 
-        <!-- Content Row -->
-        <div class="row">
-            <!-- /.col-md-4 -->
-            <div class="col-md-4 mb-4">
-                <div class="card h-100">
-                    <div class="card-body">
-                        <h2 class="card-title">EZ Admin</h2>
-                        <p class="card-text">The  dashboard offers an easy way to view and modify data</p>
-                    </div>
-                    <div class="card-footer">
-                        <a href="{{ path('easyadmin') }}" class="btn btn-primary">EZAdmin Dashboard</a>
-                    </div>
-                </div>
-            </div>
-            <!-- /.col-md-4 -->
-            <div class="col-md-4 mb-4">
-                <div class="card h-100">
-                    <div class="card-body">
-                        <h2 class="card-title">something else</h2>
-                        <p class="card-text">From the menu? From Config?</p>
-                    </div>
-                    <div class="card-footer">
-                        <a href="{{ path('survos_landing') }}" class="btn btn-primary">survos_landing: More Info</a>
-                    </div>
-                </div>
-            </div>
-            <!-- /.col-md-4 -->
-
-        </div>
-        <!-- /.row -->
+        {{ knp_menu_render('landing_menu', {'currentClass': 'active', 'template': '@SurvosLanding/landing_menu_blocks.html.twig'}) }}
 
     </div>
     <!-- /.container -->
@@ -157,7 +128,7 @@
     <!-- Footer -->
     <footer class="py-5 bg-dark">
         <div class="container">
-            <p class="m-0 text-center text-white">Copyright &copy; </p>
+            <p class="m-0 text-center text-white">Copyright &copy;</p>
         </div>
         <!-- /.container -->
     </footer>
