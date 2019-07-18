@@ -3,8 +3,6 @@
     "description": "Add a landing to a Symfony4 application",
     "type": "symfony-bundle",
     "require": {
-        "symfony/workflow": "^4.1",
-        "easycorp/easyadmin-bundle": "^1.17|^2.0",
         "knplabs/knp-menu-bundle": "^2.0",
         "twig/twig": "^2.5|^3.0"
     },
