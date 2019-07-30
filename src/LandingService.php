@@ -2,8 +2,6 @@
 
 namespace Survos\LandingBundle;
 
-use EasyCorp\Bundle\EasyAdminBundle\Configuration\ConfigManager;
-
 class LandingService
 {
     private $entityClasses;
@@ -12,12 +10,6 @@ class LandingService
     {
         $this->entityClasses = $entityClasses;
         // dump($entityClasses); die("Stopped");
-    }
-
-    public function setConfigManager(ConfigManager $configManager): self
-    {
-        $this->configManager = $configManager;
-        return $this;
     }
 
     public function getEntities()
