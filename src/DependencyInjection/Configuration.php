@@ -10,13 +10,8 @@ class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder()
     {
         $rootName = 'survos_landing';
-        if (method_exists(TreeBuilder::class, 'getRootNode')) {
-            $treeBuilder = new TreeBuilder($rootName);
-            $rootNode = $treeBuilder->getRootNode();
-        } else {
-            $treeBuilder = new TreeBuilder();
-            $rootNode = $treeBuilder->Root($rootName);
-        }
+        $treeBuilder = new TreeBuilder($rootName);
+        $rootNode = $treeBuilder->getRootNode();
 
         $rootNode
             ->children()
