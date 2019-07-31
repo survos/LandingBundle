@@ -21,6 +21,15 @@ class SurvosLandingExtension extends Extension
 
         $definition->setArgument(0, $config['entities']);
 
+        /* @todo: add menu items based on what bundles are installed (EasyAdminBundle, etc.) */
+        $bundles = $container->getParameter('kernel.bundles');
+        // dump($bundles); die();
+        if (false && !isset($bundles['YourDependentBundle'])) {
+            throw new \InvalidArgumentException(
+                'The bundle ... needs to be registered in order to use AcmeDemoBundle.'
+            );
+        }
+
         // $configManager = $container->get('easyadmin.config.manager');
         // $definition->setArgument(1, $configManager);
         // $definition->setArgument(1, $config['min_sunshine']);

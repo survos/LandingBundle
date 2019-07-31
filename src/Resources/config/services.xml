@@ -16,5 +16,11 @@
             <tag name="console.command" />
         </service>
 
+        <service id="Survos\LandingBundle\Command\SurvosSetupCommand" class="Survos\LandingBundle\Command\SurvosSetupCommand" public="false">
+            <argument type="service" id="kernel"></argument>
+            <argument type="service" id="doctrine"></argument>
+            <tag name="console.command" />
+        </service>
+
     </services>
 </container>

@@ -21,7 +21,8 @@
     },
     "extra": {
         "symfony": {
-            "allow-contrib": "true"
+            "allow-contrib": "true",
+            "id": "landing-bundle.survos.com"
         }
     }
 }
