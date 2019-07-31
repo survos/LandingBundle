@@ -136,6 +136,11 @@ class SurvosSetupCommand extends ContainerAwareCommand
 
     private function checkYarn(SymfonyStyle $io)
     {
+        if (!file_exists($this->projectDir . '/yarn.lock')) {
+            $io->warning("Installing base yarn libraries");
+            echo exec('yarn install');
+        }
+
         $json = exec(sprintf('yarn list --pattern "(%s)" --json', join('|', self::requiredJsLibraries)) );
 
             $yarnModules = json_decode($json, true);

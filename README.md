@@ -28,7 +28,7 @@ This bundle was created originally to isolate issues with other bundles and to g
 
 The bundle assumes you've created your project from the base website skeleton
 
-    git clone git@github.com:survos/select2entity-bundle-demo.git my-app && cd my-app 
+     symfony new --full my-app && cd my-app && yarn install
 
 Install the bundle, then go through the setup to add and configure the tools.
 
