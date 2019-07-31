@@ -13,6 +13,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\HttpKernel\KernelInterface;
+use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\Process;
 use Symfony\Component\Yaml\Yaml;
 
 class SurvosSetupCommand extends ContainerAwareCommand
@@ -65,12 +67,15 @@ class SurvosSetupCommand extends ContainerAwareCommand
 
         $this->checkYarn($io);
 
-        if (true || $io->confirm('Using PostGreSQL/Sqlite instead of MySQL?', true)) {
-            $doctrineBundle = $this->kernel->getBundle('DoctrineBundle');
+        if ($io->confirm('Remove MySQL-specific DBAL configuration?', true)) {
+            $config = Yaml::parseFile($configFile = $this->projectDir . '/config/packages/doctrine.yaml');
 
-            $config = Yaml::parseFile($this->projectDir . '/config/packages/doctrine.yaml');
+            $replaceDbal = [
+                'url' => $config['doctrine']['dbal']['url']
+            ];
 
-            dump($config, $doctrineBundle); die();
+            $config['doctrine']['dbal'] = $replaceDbal;
+            file_put_contents($configFile, Yaml::dump($config));
         }
 
 
@@ -155,12 +160,24 @@ class SurvosSetupCommand extends ContainerAwareCommand
             $io->error("Missing " . join(',', $missing));
             $command = sprintf("yarn add %s --dev", join(' ', $missing));
             if ($io->confirm("Install them now? with $command? ", true)) {
-                echo exec($command);
-                die($command);
+                echo exec($command) . "\n";
             } else {
                 die("Cannot continue without yarn modules");
             }
         }
+
+        // echo exec('yarn run encore dev');
+        /* better: */
+        $process = new Process(['yarn', 'run', 'encore', 'dev']);
+        $process->run();
+
+        // executes after the command finishes
+        if (!$process->isSuccessful()) {
+            throw new ProcessFailedException($process);
+        }
+
+        echo $process->getOutput();
+
 
     }
     private function checkBundles(SymfonyStyle $io)
