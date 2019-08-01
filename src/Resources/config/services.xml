@@ -10,6 +10,7 @@
 
         <service id="Survos\LandingBundle\Controller\LandingController" public="true">
             <argument type="service" id="survos_landing_bundle.landing_service"></argument>
+            <argument type="service" id="kernel"></argument>
         </service>
 
         <service id="Survos\LandingBundle\Command\SurvosSetupHerokuCommand" class="Survos\LandingBundle\Command\SurvosSetupHerokuCommand" public="false">
@@ -17,6 +18,13 @@
         </service>
 
         <service id="Survos\LandingBundle\Command\SurvosSetupCommand" class="Survos\LandingBundle\Command\SurvosSetupCommand" public="false">
+            <argument type="service" id="kernel"></argument>
+            <argument type="service" id="doctrine"></argument>
+            <argument type="service" id="twig"></argument>
+            <tag name="console.command" />
+        </service>
+
+        <service id="Survos\LandingBundle\Command\SurvosPrepareCommand" class="Survos\LandingBundle\Command\SurvosPrepareCommand" public="false">
             <argument type="service" id="kernel"></argument>
             <argument type="service" id="doctrine"></argument>
             <argument type="service" id="twig"></argument>

@@ -1,0 +1,9 @@
+{% extends "base.html.twig" %}
+
+{% block body %}
+    <ul>
+        {% for bundle in bundles %}
+            <li>{{bundle.name}}</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

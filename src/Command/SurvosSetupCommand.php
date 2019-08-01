@@ -4,7 +4,6 @@ namespace Survos\LandingBundle\Command;
 
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -17,9 +16,8 @@ use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Yaml\Yaml;
 
-class SurvosSetupCommand extends ContainerAwareCommand
+class SurvosSetupCommand extends Command
 {
-    use ContainerAwareTrait;
     protected static $defaultName = 'survos:setup';
 
     private $projectDir;
@@ -27,10 +25,13 @@ class SurvosSetupCommand extends ContainerAwareCommand
     private $em;
     private $twig;
 
+    /** @var SymfonyStyle */
+    private $io;
+
     CONST recommendedBundles = [
-        'EasyAdminBundle',
-        'SurvosWorkflowBundle',
-        'UserBundle'
+        'EasyAdminBundle' => ['repo' => 'admin'],
+        'SurvosWorkflowBundle' => ['repo' => 'survos/workflow-bundle'],
+        'MsgPhpUserBundle' => ['repo' => 'msgphp/user-bundle']
     ];
 
     CONST requiredJsLibraries = [
@@ -65,40 +66,13 @@ class SurvosSetupCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $io = new SymfonyStyle($input, $output);
-
-        $this->createConfig($io);
-
-        $this->checkYarn($io);
-
-        if ($io->confirm('Remove MySQL-specific DBAL configuration?', true)) {
-            $config = Yaml::parseFile($configFile = $this->projectDir . '/config/packages/doctrine.yaml');
-
-            $replaceDbal = [
-                'url' => $config['doctrine']['dbal']['url']
-            ];
-
-            $config['doctrine']['dbal'] = $replaceDbal;
-            file_put_contents($configFile, Yaml::dump($config,1));
-        }
-
-        if ($io->confirm('Use sqlite database in .env.local', true)) {
-            if (!file_exists($fn = $this->projectDir . '/.env.local')) {
-                file_put_contents($fn, "DATABASE_URL=sqlite:///%kernel.project_dir%/var/data.db");
-            }
-            $config = Yaml::parseFile($configFile = $this->projectDir . '/config/packages/doctrine.yaml');
-
-            $replaceDbal = [
-                'url' => $config['doctrine']['dbal']['url']
-            ];
-
-            $config['doctrine']['dbal'] = $replaceDbal;
-            file_put_contents($configFile, Yaml::dump($config,1));
-        }
+        $this->io = $io = new SymfonyStyle($input, $output);
 
         $this->checkBundles($io);
-        $this->checkEntities($io);
-        $this->updateBase($io);
+        $this->updateAssets($io);
+        $this->checkYarn($io);
+
+        // $this->checkEntities($io);
         $this->createConfig($io);
 
         if ($prefix = $io->ask("Landing Route Prefix", '/')) {
@@ -114,19 +88,59 @@ class SurvosSetupCommand extends ContainerAwareCommand
             $io->comment($fn . " written.");
         }
 
-
-
-        $arg1 = $input->getArgument('arg1');
-
-        if ($arg1) {
-            $io->note(sprintf('You passed an argument: %s', $arg1));
-        }
-
-        if ($input->getOption('option1')) {
-            // ...
-        }
-
         $io->success('Start your server and go to ' . $prefix);
+    }
+
+    private function checkYarn(SymfonyStyle $io)
+    {
+        if (!file_exists($this->projectDir . '/yarn.lock')) {
+            $io->error("run yarn install or bin/console survos:prepare first");
+            die();
+        }
+
+        try {
+            $json = exec(sprintf('yarn list --pattern "(%s)" --json', join('|', self::requiredJsLibraries)) );
+
+            $yarnModules = json_decode($json, true);
+
+            $modules = array_map(function ($tree) {
+                if (is_string($tree)) {
+                    return $tree;
+                }
+                [$name, $version] = explode('@', $tree['name']);
+                return $name;
+            }, $yarnModules['data']['trees'] );
+
+            // sort($modules); dump($modules); die();
+        } catch (\Exception $e) {
+            $io->error("Yarn failed -- is it installed? " . $e->getMessage());
+        }
+
+        $missing = array_diff(self::requiredJsLibraries, $modules);
+
+        if ($missing) {
+            $io->error("Missing " . join(',', $missing));
+            $command = sprintf("yarn add %s --dev", join(' ', $missing));
+            if ($io->confirm("Install them now? with $command? ", true)) {
+                echo exec($command) . "\n";
+            } else {
+                die("Cannot continue without yarn modules");
+            }
+        }
+
+        // echo exec('yarn run encore dev');
+        /* better: */
+        $process = new Process(['yarn', 'run', 'encore', 'dev']);
+        $process->run();
+
+        // executes after the command finishes
+        if (!$process->isSuccessful()) {
+            throw new ProcessFailedException($process);
+        }
+
+        echo $process->getOutput();
+
+
     }
 
     private function createConfig(SymfonyStyle $io) {
@@ -180,75 +194,31 @@ END;
         foreach ($meta as $m) {
             $entities[] = $m->getName();
         }
+
+        // if there are entities and easyadmin, create the easyadmin.yaml file??
         dump($entities);
     }
 
-    private function updateBase(SymfonyStyle $io) {
+    private function updateAssets(SymfonyStyle $io) {
         $fn = '/templates/base.html.twig';
-        if ($io->confirm("Replace $fn with one that load js and css assets?")) {
-            file_put_contents($output = $this->projectDir . $fn, '{% extends "@SurvosLanding/base.html.twig" %}');
-            $io->comment($output . " written.");
-        }
-    }
-
-    private function checkYarn(SymfonyStyle $io)
-    {
-        if (!file_exists($this->projectDir . '/yarn.lock')) {
-            $io->warning("Installing base yarn libraries");
-            echo exec('yarn install');
-        }
-
-        $json = exec(sprintf('yarn list --pattern "(%s)" --json', join('|', self::requiredJsLibraries)) );
-
-            $yarnModules = json_decode($json, true);
-
-            $modules = array_map(function ($tree) {
-                if (is_string($tree)) {
-                    return $tree;
-                }
-                [$name, $version] = explode('@', $tree['name']);
-                return $name;
-            }, $yarnModules['data']['trees'] );
-
-            // sort($modules); dump($modules); die();
-        try {
-        } catch (\Exception $e) {
-            $io->error("Yarn failed -- is it installed? " . $e->getMessage());
-        }
-
-        $missing = array_diff(self::requiredJsLibraries, $modules);
-
-        if ($missing) {
-            $io->error("Missing " . join(',', $missing));
-            $command = sprintf("yarn add %s --dev", join(' ', $missing));
-            if ($io->confirm("Install them now? with $command? ", true)) {
-                echo exec($command) . "\n";
-            } else {
-                die("Cannot continue without yarn modules");
+        if ($io->confirm("Replace app assets (js and css)?")) {
+            // @todo: specific to yarn packages
+            try {
+                $this->writeFile('/assets/js/app.js', $this->twig->render("@SurvosLanding/app.js.twig", []) );
+                $this->writeFile('/assets/css/app.css', $this->twig->render("@SurvosLanding/app.css.twig", []) );
+            } catch (\Exception $e) {
+                $io->error($e->getMessage());
             }
         }
-
-        // echo exec('yarn run encore dev');
-        /* better: */
-        $process = new Process(['yarn', 'run', 'encore', 'dev']);
-        $process->run();
-
-        // executes after the command finishes
-        if (!$process->isSuccessful()) {
-            throw new ProcessFailedException($process);
-        }
-
-        echo $process->getOutput();
-
-
     }
+
     private function checkBundles(SymfonyStyle $io)
     {
         $bundles = $this->kernel->getBundles();
 
-        foreach (self::recommendedBundles as $bundleName) {
+        foreach (self::recommendedBundles as $bundleName=>$info) {
             if (empty($bundles[$bundleName])) {
-                $io->warning($bundleName . ' is recommended, install it using composer req ' . $bundleName);
+                $io->warning($bundleName . ' is recommended, install it using composer req ' . $info['repo']);
             }
         }
 
@@ -256,5 +226,10 @@ END;
 
         }
 
+    }
+
+    private function writeFile($fn, $contents) {
+        file_put_contents($output = $this->projectDir . $fn, $contents);
+        $this->io->success($fn . " written.");
     }
 }
