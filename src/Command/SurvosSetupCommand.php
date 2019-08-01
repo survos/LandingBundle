@@ -76,7 +76,7 @@ class SurvosSetupCommand extends Command
         // $this->checkEntities($io);
         $this->createConfig($io);
 
-        $io->success('Start your server and go to ' . $prefix);
+        $io->success('Landing Configuration Complete.');
     }
 
     private function checkYarn(SymfonyStyle $io)
@@ -208,6 +208,9 @@ END;
                 $io->error($e->getMessage());
             }
         }
+
+        // this might be running with --watch, but this makes sure it happens after the write.
+        echo exec('yarn run encore dev');
     }
 
     private function checkBundles(SymfonyStyle $io): array

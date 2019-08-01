@@ -32,6 +32,18 @@ The bundle assumes you've created your project from the base website skeleton
 
 
 
+    composer req survos/landing-bundle
+    bin/console survos:prepare --no-interaction
+    composer req maker --dev
+    composer req messenger msgphp/user-bundle
+    bin/console make:user:msgphp --no-interaction
+    bin/console doctrine:schema:update --force
+    bin/console survos:setup --no-interaction
+    symfony server:start 
+
+
+
+
 ### Install and Configure UserBundle (optional)
 
 See [docs/recommended_bundles]
@@ -52,14 +64,17 @@ Install the bundle, then go through the setup to add and configure the tools.
     xterm -e "yarn run encore dev-server" &
     
     bin/console survos:prepare
-    bin/console survos:setup
+    
+#### Now install some bundles!
+     
+    See the details at [Recommended Bundles](docs/recommended-bundles.md)
 
 If you chosen to integrate the userbundle, update the schema and add an admin    
     
     bin/console doctrine:schema:update --force
     bin/console msgphp:make:user
 
-    symfony serv
+    symfony server:start 
     
 When finished, the application will have a basic landing page with top navigation, optionally including login/registration pages.  Logged in users with ROLE_ADMIN will also (optionally) have links to easyadmin and api-platform.  
 
