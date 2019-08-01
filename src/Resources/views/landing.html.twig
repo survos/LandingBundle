@@ -1,5 +1,6 @@
 {% extends ['base.html.twig', "SurvosLandingBundle::base.html.twig"] %}
 
+{# from https://getbootstrap.com/docs/4.3/examples/jumbotron/ #}
 {% block title "Default Survos Landing Page" %}
 
 {% block test_navbar %}
@@ -116,7 +117,7 @@
             <div class="card-body text-danger">
                 <i class="fas fa-skull-crossbones"></i>Warning
 
-                <p class="text-white m-0">Data updated here will be lost!  Do not use for production, only testing.</p>
+                <p class="text-white m-0">{{ 'home.intro'|trans }}</p>
             </div>
         </div>
 

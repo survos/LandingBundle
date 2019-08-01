@@ -28,18 +28,30 @@ This bundle was created originally to isolate issues with other bundles and to g
 
 The bundle assumes you've created your project from the base website skeleton
 
-     symfony new --full my-app && cd my-app && yarn install
+     symfony new --full my-app && cd my-app
+
+
+
+### Install and Configure UserBundle (optional)
+
+See [docs/recommended_bundles]
+
 
 #### If developing LandingBundle
 
-    config repositories.survoslanding '{"type": "path", "url": "../Survos/WorkflowBundle"}'
-    composer req survos/landing-bundle:*@dev
+    composer config repositories.survoslanding '{"type": "path", "url": "../Survos/LandingBundle"}'
+    composer req survos/landing-bundle:"*@dev"
 
 #### Normal installation
 
 Install the bundle, then go through the setup to add and configure the tools.
 
     composer req survos/landing-bundle
+    
+    yarn install 
+    xterm -e "yarn run encore dev-server" &
+    
+    bin/console survos:prepare
     bin/console survos:setup
 
 If you chosen to integrate the userbundle, update the schema and add an admin    

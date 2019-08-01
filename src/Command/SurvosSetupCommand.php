@@ -38,6 +38,7 @@ class SurvosSetupCommand extends Command
         'jquery',
         'bootstrap',
         'fontawesome',
+        '@fortawesome/fontawesome-free',
         'popper.js'
     ];
 
@@ -68,25 +69,12 @@ class SurvosSetupCommand extends Command
     {
         $this->io = $io = new SymfonyStyle($input, $output);
 
-        $this->checkBundles($io);
-        $this->updateAssets($io);
-        $this->checkYarn($io);
+        $bundles = $this->checkBundles($io);
+        $yarnPackages = $this->checkYarn($io);
+        $this->updateAssets($io, ['bundles' => $bundles, 'yarnPackages' => $yarnPackages]);
 
         // $this->checkEntities($io);
         $this->createConfig($io);
-
-        if ($prefix = $io->ask("Landing Route Prefix", '/')) {
-            $fn = '/config/routes/survos_landing.yaml';
-            $config = [
-                'survos_landing_bundle' => [
-                    'resource' => '@SurvosLandingBundle/Controller/LandingController.php',
-                    'prefix' => $prefix,
-                    'type' => 'annotation'
-                ]
-            ];
-            file_put_contents($output = $this->projectDir . $fn, Yaml::dump($config));
-            $io->comment($fn . " written.");
-        }
 
         $io->success('Start your server and go to ' . $prefix);
     }
@@ -107,7 +95,10 @@ class SurvosSetupCommand extends Command
                 if (is_string($tree)) {
                     return $tree;
                 }
-                [$name, $version] = explode('@', $tree['name']);
+                if ( preg_match('/(.*)(@[\d\.]+)$/', $tree['name'], $m) ) {
+                    $name = $m[1];
+                }
+                // [$name, $version] = explode('@', $tree['name']);
                 return $name;
             }, $yarnModules['data']['trees'] );
 
@@ -123,13 +114,17 @@ class SurvosSetupCommand extends Command
             $command = sprintf("yarn add %s --dev", join(' ', $missing));
             if ($io->confirm("Install them now? with $command? ", true)) {
                 echo exec($command) . "\n";
+                return $this->checkYarn($io); // recursive hack, should be refactored!
             } else {
                 die("Cannot continue without yarn modules");
             }
+        } else {
+            return $modules;
         }
 
-        // echo exec('yarn run encore dev');
+
         /* better: */
+        /*
         $process = new Process(['yarn', 'run', 'encore', 'dev']);
         $process->run();
 
@@ -139,6 +134,9 @@ class SurvosSetupCommand extends Command
         }
 
         echo $process->getOutput();
+        */
+
+
 
 
     }
@@ -199,20 +197,20 @@ END;
         dump($entities);
     }
 
-    private function updateAssets(SymfonyStyle $io) {
+    private function updateAssets(SymfonyStyle $io, array $params) {
         $fn = '/templates/base.html.twig';
         if ($io->confirm("Replace app assets (js and css)?")) {
             // @todo: specific to yarn packages
             try {
-                $this->writeFile('/assets/js/app.js', $this->twig->render("@SurvosLanding/app.js.twig", []) );
-                $this->writeFile('/assets/css/app.css', $this->twig->render("@SurvosLanding/app.css.twig", []) );
+                $this->writeFile('/assets/js/app.js', $this->twig->render("@SurvosLanding/app.js.twig", $params) );
+                $this->writeFile('/assets/css/app.css', $this->twig->render("@SurvosLanding/app.css.twig", $params) );
             } catch (\Exception $e) {
                 $io->error($e->getMessage());
             }
         }
     }
 
-    private function checkBundles(SymfonyStyle $io)
+    private function checkBundles(SymfonyStyle $io): array
     {
         $bundles = $this->kernel->getBundles();
 
@@ -225,6 +223,8 @@ END;
         foreach ($bundles as $bundleName) {
 
         }
+
+        return $bundles;
 
     }
 

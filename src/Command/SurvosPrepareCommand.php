@@ -63,9 +63,29 @@ class SurvosPrepareCommand extends Command
     {
         $this->io = $io = new SymfonyStyle($input, $output);
 
+        // https://favicon.io/favicon-generator/?t=Fa&ff=Lancelot&fs=99&fc=%23FFFFFF&b=rounded&bc=%23B4B
+
         $this->checkYarn($io);
         $this->updateBase($io);
         $this->setupDatabase($io);
+
+        // perhaps install required yarn modules here?  Then in setup have the optional ones?
+
+        // configure the route
+        if ($prefix = $io->ask("Landing Route Prefix", '/')) {
+            $fn = '/config/routes/survos_landing.yaml';
+            $config = [
+                'survos_landing_bundle' => [
+                    'resource' => '@SurvosLandingBundle/Controller/LandingController.php',
+                    'prefix' => $prefix,
+                    'type' => 'annotation'
+                ]
+            ];
+            file_put_contents($output = $this->projectDir . $fn, Yaml::dump($config));
+            $io->comment($fn . " written.");
+        }
+
+        $io->success("Run xterm -e \"yarn run encore dev-server\" & install more bundles, then run bin/console survos:setup");
     }
 
     private function updateBase(SymfonyStyle $io) {
@@ -108,6 +128,11 @@ class SurvosPrepareCommand extends Command
             $config['doctrine']['dbal'] = $replaceDbal;
             file_put_contents($configFile, Yaml::dump($config,1));
         }
+    }
+
+    private function writeFile($fn, $contents) {
+        file_put_contents($output = $this->projectDir . $fn, $contents);
+        $this->io->success($fn . " written.");
     }
 
 }
