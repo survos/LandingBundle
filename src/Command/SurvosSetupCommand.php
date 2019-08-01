@@ -25,6 +25,7 @@ class SurvosSetupCommand extends ContainerAwareCommand
     private $projectDir;
     private $kernel;
     private $em;
+    private $twig;
 
     CONST recommendedBundles = [
         'EasyAdminBundle',
@@ -39,12 +40,13 @@ class SurvosSetupCommand extends ContainerAwareCommand
         'popper.js'
     ];
 
-    public function __construct(KernelInterface $kernel, Registry $registry, string $name = null)
+    public function __construct(KernelInterface $kernel, Registry $registry, \Twig\Environment $twig, string $name = null)
     {
         parent::__construct($name);
         $this->kernel = $kernel;
         $this->em = $registry->getEntityManager();
         $this->projectDir = $kernel->getProjectDir();
+        $this->twig = $twig;
     }
 
     public function setEntityManager(EntityManagerInterface $entityManager) {
@@ -65,6 +67,8 @@ class SurvosSetupCommand extends ContainerAwareCommand
     {
         $io = new SymfonyStyle($input, $output);
 
+        $this->createConfig($io);
+
         $this->checkYarn($io);
 
         if ($io->confirm('Remove MySQL-specific DBAL configuration?', true)) {
@@ -75,13 +79,27 @@ class SurvosSetupCommand extends ContainerAwareCommand
             ];
 
             $config['doctrine']['dbal'] = $replaceDbal;
-            file_put_contents($configFile, Yaml::dump($config));
+            file_put_contents($configFile, Yaml::dump($config,1));
         }
 
+        if ($io->confirm('Use sqlite database in .env.local', true)) {
+            if (!file_exists($fn = $this->projectDir . '/.env.local')) {
+                file_put_contents($fn, "DATABASE_URL=sqlite:///%kernel.project_dir%/var/data.db");
+            }
+            $config = Yaml::parseFile($configFile = $this->projectDir . '/config/packages/doctrine.yaml');
+
+            $replaceDbal = [
+                'url' => $config['doctrine']['dbal']['url']
+            ];
+
+            $config['doctrine']['dbal'] = $replaceDbal;
+            file_put_contents($configFile, Yaml::dump($config,1));
+        }
 
         $this->checkBundles($io);
         $this->checkEntities($io);
         $this->updateBase($io);
+        $this->createConfig($io);
 
         if ($prefix = $io->ask("Landing Route Prefix", '/')) {
             $fn = '/config/routes/survos_landing.yaml';
@@ -97,11 +115,6 @@ class SurvosSetupCommand extends ContainerAwareCommand
         }
 
 
-        if ($prefix = $io->ask("Application Menu Class", 'App/Menu/AppMenuBuilder')) {
-            $fn = '/src/Menu/AppMenuBuilder.php';
-            // use twig? Php?
-            $io->comment($fn . " NOT written.");
-        }
 
         $arg1 = $input->getArgument('arg1');
 
@@ -114,6 +127,50 @@ class SurvosSetupCommand extends ContainerAwareCommand
         }
 
         $io->success('Start your server and go to ' . $prefix);
+    }
+
+    private function createConfig(SymfonyStyle $io) {
+
+        $yaml = <<< END
+services:
+  survos.landing_menu_builder:
+    class: Survos\LandingBundle\Menu\LandingMenuBuilder
+    arguments:
+      - "@knp_menu.factory"
+      - "@security.authorization_checker"
+    tags:
+      #      - { name: knp_menu.menu_builder, method: createMainMenu, alias: landing_menu } # The alias is what is used to retrieve the menu
+      - { name: knp_menu.menu_builder, method: createTestMenu, alias: test_menu }
+      - { name: knp_menu.menu_builder, method: createTestMenu, alias: landing_menu }
+      - { name: knp_menu.menu_builder, method: createAuthMenu, alias: auth_menu }
+
+  app.menu_builder:
+    class: App\Menu\MenuBuilder
+    arguments:
+      - "@knp_menu.factory"
+      - "@security.authorization_checker"
+    tags:
+      - { name: knp_menu.menu_builder, method: createMainMenu, alias: landing_menu }
+END;
+
+        if ($prefix = $io->ask("Application Menu Class", 'App/Menu/MenuBuilder')) {
+            $dir = $this->projectDir . '/src/Menu';
+            $fn = '/src/Menu/MenuBuilder.php';
+            if (!is_dir($dir)) {
+                mkdir($dir);
+            }
+            $php = $this->twig->render("@SurvosLanding/MenuBuilder.php.twig", []);
+
+            // $yaml =  Yaml::dump($config);
+            file_put_contents($output = $this->projectDir . $fn, $php);
+            $io->comment($fn . " written.");
+
+
+            // use twig? Php?
+            $fn = '/config/packages/survos_landing.yaml';
+            file_put_contents($output = $this->projectDir . $fn, $yaml);
+            $io->comment($fn . "  written.");
+        }
     }
 
     private function checkEntities(SymfonyStyle $io) {

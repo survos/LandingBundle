@@ -30,6 +30,13 @@ The bundle assumes you've created your project from the base website skeleton
 
      symfony new --full my-app && cd my-app && yarn install
 
+#### If developing LandingBundle
+
+    config repositories.survoslanding '{"type": "path", "url": "../Survos/WorkflowBundle"}'
+    composer req survos/landing-bundle:*@dev
+
+#### Normal installation
+
 Install the bundle, then go through the setup to add and configure the tools.
 
     composer req survos/landing-bundle
