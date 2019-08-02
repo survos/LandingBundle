@@ -28,14 +28,13 @@ This bundle was created originally to isolate issues with other bundles and to g
 
 The bundle assumes you've created your project from the base website skeleton
 
-     symfony new --full my-app && cd my-app
-
-
+    symfony new --full my-app && cd my-app
+    composer config extra.symfony.allow-contrib true
 
     composer req survos/landing-bundle
     bin/console survos:prepare --no-interaction
     composer req maker --dev
-    composer req messenger msgphp/user-bundle
+    composer req messenger msgphp/user-bundle -n
     bin/console make:user:msgphp --no-interaction
     bin/console doctrine:schema:update --force
     bin/console survos:setup --no-interaction
