@@ -17,7 +17,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Survos\\Bundle\\LandingBundle\\": "src/"
+            "Survos\\LandingBundle\\": "src/"
         }
     },
     "license": "MIT",
