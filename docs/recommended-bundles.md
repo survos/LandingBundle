@@ -16,6 +16,7 @@ FOSUserBundle isn't really supported very well with Symfony 4.  Use this instead
     composer req maker --dev
     composer req messenger msgphp/user-bundle
 
-    bin/console make:user:msgphp
+    bin/console make:user:msgphp -n
+
     
     

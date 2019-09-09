@@ -5,23 +5,28 @@ namespace Survos\LandingBundle\Menu;
 use Knp\Menu\FactoryInterface;
 use Knp\Menu\ItemInterface;
 use Knp\Menu\MenuItem;
+use Symfony\Component\Routing\Exception\RouteNotFoundException;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Symfony\Component\Security\Core\Security;
 
 class LandingMenuBuilder
 {
     /* protected, so that subclasses can use it. */
     protected $factory;
     protected $authorizationChecker;
+    private $security;
 
     /**
      * @param FactoryInterface $factory
      *
      * Add any other dependency you need
      */
-    public function __construct(FactoryInterface $factory, AuthorizationCheckerInterface $authorizationChecker)
+    public function __construct(FactoryInterface $factory, AuthorizationCheckerInterface $authorizationChecker, TokenStorageInterface $security)
     {
         $this->factory = $factory;
         $this->authorizationChecker = $authorizationChecker;
+        $this->security = $security;
     }
 
     public function createMainMenu(array $options)
@@ -43,61 +48,114 @@ class LandingMenuBuilder
         $menu = $this->factory->createItem('root');
         // hack?  Seems like this should be in the renderer.  Top Level ul tag
         $menu->setChildrenAttribute('class', 'navbar-nav mr-auto');
+
+        if (true || $this->authorizationChecker->isGranted('ROLE_ADMIN')) {
+            try {
+                $menu->addChild(
+                    'easyadmin',
+                    [
+                        'route' => 'easyadmin',
+                        'attributes' => [
+                            'icon' => 'fas fa-wrench',
+                        ],
+                    ]
+                );
+            } catch (RouteNotFoundException $e) {
+                // the route is not defined...
+            }
+        }
+
         $dropdown = $menu->addChild(
             'my_account',
             [
+                'label' => $this->security->getToken()->getUsername(),
                 'attributes' => [
                     'dropdown' => true,
                 ],
             ]
         );
 
-        if ($this->authorizationChecker->isGranted('ROLE_USER')) {
+            if ($this->authorizationChecker->isGranted('ROLE_USER')) {
+                try {
+                    $dropdown->addChild(
+                        'Profile',
+                        [
+                            'route' => 'app_profile',
+                            'attributes' => [
+                                'icon' => 'fa fa-user-circle',
+                                // 'divider_append' => true,
+                            ],
+                        ]
+                    );
+                } catch (RouteNotFoundException $e) {
+                    // the route is not defined...
+                }
 
+                $dropdown->addChild(
+                    'Logout',
+                    [
+                        'route' => 'app_logout',
+                        'attributes' => [
+                            // 'divider_prepend' => true,
+                            'icon' => 'fas fa-sign-out-alt',
+                        ],
+                    ]
+                );
+            } else {
 
-        $dropdown->addChild(
-            'Profile',
-            [
-                'route' => 'profile',
-                'attributes' => [
-                    'icon' => 'fa fa-user-circle',
-                    'divider_append' => true,
-                ],
-            ]
-        );
+                try {
+                    $dropdown->addChild(
+                        'Login',
+                        [
+                            'route' => 'app_login',
+                            'attributes' => [
+                                // 'divider_prepend' => true,
+                                'icon' => 'fas fa-sign-in-alt',
+                            ],
+                        ]
+                    );
+                } catch (RouteNotFoundException $e) {
+                    // the route is not defined..., bin/console make:registration-form
 
-        $dropdown->addChild(
-            'Logout',
-            [
-                'route' => 'logout',
-                'attributes' => [
-                    'divider_prepend' => true,
-                    'icon' => 'fas fa-sign-out-alt',
-                ],
-            ]
-        );
-    } else {
-            $dropdown->addChild(
-                'Login',
-                [
-                    'route' => 'login',
-                    'attributes' => [
-                        'divider_prepend' => true,
-                        'icon' => 'fas fa-sign-in-alt',
-                    ],
-                ]
-            );
+                }
 
-            $dropdown->addChild(
-                'Register',
-                [
-                    'route' => 'register',
-                    'attributes' => [
-                        'icon' => 'fas fa-user',
-                    ],
-                ]
-            );
+                try {
+                    $dropdown->addChild(
+                        'github_login',
+                        [
+                            'route' => 'connect_github_start',
+                            'attributes' => [
+                                // 'divider_prepend' => true,
+                                'icon' => 'fas fa-github',
+                            ],
+                        ]
+                    );
+                } catch (RouteNotFoundException $e) {
+                    // the route is not defined..., bin/console make:registration-form
 
+                }
+
+                try {
+                    $dropdown->addChild(
+                        'Register',
+                        [
+                            'route' => 'app_register',
+                            'attributes' => [
+                                'icon' => 'fas fa-user',
+                            ],
+                        ]
+                    );
+                } catch (RouteNotFoundException $e) {
+                    // the route is not defined..., bin/console make:registration-form
+
+                }
+            }
+
+        try {
+        } catch (RouteNotFoundException $e) {
+                // routes likely not loaded.
+        } catch (\Exception $e) {
+            // we should really handle this.
         }
 
         return $this->cleanupMenu($menu);

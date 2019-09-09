@@ -28,20 +28,32 @@ This bundle was created originally to isolate issues with other bundles and to g
 
 The bundle assumes you've created your project from the base website skeleton
 
-    symfony new --full my-app && cd my-app
+    PROJECT_DIR=my-app4 && symfony new --full $PROJECT_DIR && cd $PROJECT_DIR
     composer config extra.symfony.allow-contrib true
-
-    composer req survos/landing-bundle
-    bin/console survos:prepare --no-interaction
+    
     composer req maker --dev
-    composer req messenger msgphp/user-bundle -n
-    bin/console make:user:msgphp --no-interaction
-    bin/console doctrine:schema:update --force
-    bin/console survos:setup --no-interaction
+
+    # interaction is required for the next commands, so if you're cutting and pasting, stop here!
+    bin/console make:user 
+    bin/console make:auth
+    bin/console make:registration-form
+    
+    # 
+    
+    composer config repositories.survoslanding '{"type": "path", "url": "../Survos/LandingBundle"}'
+    composer req survos/landing-bundle:"*@dev"
+
+    # composer req survos/landing-bundle
+    
+    bin/console survos:init
+
+    
+    
+
+### Integrating Facebook
+
+    
     symfony server:start 
-
-
-
 
 ### Install and Configure UserBundle (optional)
 
@@ -62,7 +74,10 @@ Install the bundle, then go through the setup to add and configure the tools.
     yarn install 
     xterm -e "yarn run encore dev-server" &
     
-    bin/console survos:prepare
+    bin/console survos:init
+
+    bin/console survos:config --no-interaction
+    bin/console doctrine:schema:update --force
     
 #### Now install some bundles!
      
@@ -78,6 +93,8 @@ If you chosen to integrate the userbundle, update the schema and add an admin
 When finished, the application will have a basic landing page with top navigation, optionally including login/registration pages.  Logged in users with ROLE_ADMIN will also (optionally) have links to easyadmin and api-platform.  
 
 ### Customizing the bundle
+
+### Deploy to heroku
 
 
    

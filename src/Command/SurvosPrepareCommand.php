@@ -18,7 +18,7 @@ use Symfony\Component\Yaml\Yaml;
 
 class SurvosPrepareCommand extends Command
 {
-    protected static $defaultName = 'survos:prepare';
+    protected static $defaultName = 'survos:init';
 
     private $projectDir;
     private $kernel;
@@ -66,8 +66,8 @@ class SurvosPrepareCommand extends Command
         // https://favicon.io/favicon-generator/?t=Fa&ff=Lancelot&fs=99&fc=%23FFFFFF&b=rounded&bc=%23B4B
 
         $this->checkYarn($io);
-        $this->updateBase($io);
         $this->setupDatabase($io);
+        $this->updateBase($io);
 
         // perhaps install required yarn modules here?  Then in setup have the optional ones?
 
@@ -104,7 +104,7 @@ class SurvosPrepareCommand extends Command
     }
 
     private function setupDatabase(SymfonyStyle $io) {
-        if ($io->confirm('Remove MySQL-specific DBAL configuration?', true)) {
+        if ($io->confirm('Remove MySQL-specific DBAL configuration (for SQLite or Postgres)?', true)) {
             $config = Yaml::parseFile($configFile = $this->projectDir . '/config/packages/doctrine.yaml');
 
             $replaceDbal = [
@@ -112,21 +112,14 @@ class SurvosPrepareCommand extends Command
             ];
 
             $config['doctrine']['dbal'] = $replaceDbal;
-            file_put_contents($configFile, Yaml::dump($config,1));
+            file_put_contents($configFile, Yaml::dump($config,6));
         }
 
         if ($io->confirm('Use sqlite database in .env.local', true)) {
             if (!file_exists($fn = $this->projectDir . '/.env.local')) {
                 file_put_contents($fn, "DATABASE_URL=sqlite:///%kernel.project_dir%/var/data.db");
             }
-            $config = Yaml::parseFile($configFile = $this->projectDir . '/config/packages/doctrine.yaml');
 
-            $replaceDbal = [
-                'url' => $config['doctrine']['dbal']['url']
-            ];
-
-            $config['doctrine']['dbal'] = $replaceDbal;
-            file_put_contents($configFile, Yaml::dump($config,1));
         }
     }
 

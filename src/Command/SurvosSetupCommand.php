@@ -18,7 +18,7 @@ use Symfony\Component\Yaml\Yaml;
 
 class SurvosSetupCommand extends Command
 {
-    protected static $defaultName = 'survos:setup';
+    protected static $defaultName = 'survos:configure';
 
     private $projectDir;
     private $kernel;
