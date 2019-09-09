@@ -27,6 +27,14 @@ class SurvosSetupHerokuCommand extends Command
         $io = new SymfonyStyle($input, $output);
         $arg1 = $input->getArgument('arg1');
 
+        // heroku init
+
+        // setup ENV vars
+
+        // tweak monolog: https://devcenter.heroku.com/articles/deploying-symfony3#changing-the-log-destination-for-production
+
+        // add node: heroku buildpacks:add --index 2 heroku/nodejs
+
         if ($arg1) {
             $io->note(sprintf('You passed an argument: %s', $arg1));
         }
