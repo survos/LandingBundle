@@ -1,7 +1,8 @@
 {
     "name": "survos/landing-bundle",
-    "description": "Add a landing to a Symfony4 application",
+    "description": "Add some tools and resources to a Symfony4 application",
     "type": "symfony-bundle",
+    "keywords": ["generator", "skeleton"],
     "require": {
         "knplabs/knp-menu-bundle": "^2.0",
         "twig/twig": "^2.5|^3.0",
@@ -10,6 +11,14 @@
     "require-dev": {
         "doctrine/doctrine-fixtures-bundle": "^3.0",
         "fzaninotto/faker": "^1.7"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "autoload": {
+        "psr-4": {
+            "Survos\\Bundle\\LandingBundle\\": "src/"
+        }
     },
     "license": "MIT",
     "authors": [
