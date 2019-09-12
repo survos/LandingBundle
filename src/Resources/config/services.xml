@@ -9,8 +9,6 @@
         <service id="survos_landing_bundle.landing_service" class="Survos\LandingBundle\LandingService" />
 
         <service id="Survos\LandingBundle\Controller\LandingController" public="true" autowire="true">
-            <argument type="service" id="survos_landing_bundle.landing_service"></argument>
-            <argument type="service" id="kernel"></argument>
             <tag name="container.service_subscriber" />
         </service>
 
@@ -20,8 +18,14 @@
         </service>
         -->
 
-
         <service id="Survos\LandingBundle\Command\SurvosSetupHerokuCommand" class="Survos\LandingBundle\Command\SurvosSetupHerokuCommand" public="false">
+            <tag name="console.command" />
+        </service>
+
+        <service id="Survos\LandingBundle\Command\UserCreateCommand" class="Survos\LandingBundle\Command\UserCreateCommand" public="false">
+            <argument type="service" id="security.password_encoder"></argument>
+            <argument type="service" id="security.user.provider.concrete.app_user_provider"></argument>
+            <argument type="service" id="doctrine.orm.entity_manager"></argument>
             <tag name="console.command" />
         </service>
 
@@ -32,7 +36,7 @@
             <tag name="console.command" />
         </service>
 
-        <service id="Survos\LandingBundle\Command\SurvosPrepareCommand" class="Survos\LandingBundle\Command\SurvosPrepareCommand" public="false">
+        <service id="Survos\LandingBundle\Command\SurvosInitCommand" class="Survos\LandingBundle\Command\SurvosInitCommand" public="false">
             <argument type="service" id="kernel"></argument>
             <argument type="service" id="doctrine"></argument>
             <argument type="service" id="twig"></argument>

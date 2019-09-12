@@ -150,6 +150,7 @@ services:
     arguments:
       - "@knp_menu.factory"
       - "@security.authorization_checker"
+      - "@security.token_storage"
     tags:
       #      - { name: knp_menu.menu_builder, method: createMainMenu, alias: landing_menu } # The alias is what is used to retrieve the menu
       - { name: knp_menu.menu_builder, method: createTestMenu, alias: test_menu }
@@ -161,6 +162,7 @@ services:
     arguments:
       - "@knp_menu.factory"
       - "@security.authorization_checker"
+      - "@security.token_storage"
     tags:
       - { name: knp_menu.menu_builder, method: createMainMenu, alias: landing_menu }
 END;

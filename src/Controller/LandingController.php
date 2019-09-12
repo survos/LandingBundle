@@ -2,7 +2,9 @@
 
 namespace Survos\LandingBundle\Controller;
 
+use App\Entity\ApiToken;
 use App\Entity\User;
+use App\Form\ForgotPasswordFormType;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Survos\LandingBundle\LandingService;
@@ -19,13 +21,11 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 class LandingController extends AbstractController
 {
     private $landingService;
-    private $kernel;
     private $entityManager;
 
-    public function __construct(LandingService $landingService, KernelInterface $kernel, EntityManagerInterface $entityManager)
+    public function __construct(LandingService $landingService, EntityManagerInterface $entityManager)
     {
         $this->landingService = $landingService;
-        $this->kernel = $kernel;
         $this->entityManager = $entityManager;
     }
 
@@ -76,10 +76,37 @@ class LandingController extends AbstractController
      */
     public function credits(Request $request)
     {
-        $bundles = $this->kernel->getBundles();
+        // bad practice to inject the kernel.  Maybe read composer.json and composer.lock
+        $json = file_get_contents('../composer.json');
+
         return $this->render("@SurvosLanding/credits.html.twig", [
-            'bundles' => $bundles
+            'composerData' => json_decode($json, true),
         ]);
+    }
+
+    /**
+     * @Route("/one-time-login-request", name="app_one_time_login_request")
+     */
+    public function oneTimeLoginRequest(Request $request)
+    {
+        $form = $this->createForm(ForgotPasswordFormType::class);
+        $form->handleRequest($request);
+        if ($form->isValid() && $form->isSubmitted()) {
+            $email = $form->get('email')->getData();
+            $oneTimeLogin = new ApiToken($email);
+            $this->entityManager->persist($oneTimeLogin);
+            $this->entityManager->flush();
+
+            $this->addFlash('notice', "Email sent?");
+
+            return $this->redirectToRoute('app_one_time_login_request');
+        }
+
+        return $this->render("@SurvosLanding/forgot_password.html.twig", [
+            'form' => $form->createView()
+        ]);
+
+
     }
 
 }

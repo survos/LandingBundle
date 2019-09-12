@@ -28,10 +28,12 @@ This bundle was created originally to isolate issues with other bundles and to g
 
 The bundle assumes you've created your project from the base website skeleton
 
-    PROJECT_DIR=my-app4 && symfony new --full $PROJECT_DIR && cd $PROJECT_DIR
-    composer config extra.symfony.allow-contrib true
+
+    PROJECT_DIR=my-app5 && symfony new --full $PROJECT_DIR && cd $PROJECT_DIR
+    PROJECT_DIR=my-44-app &&  symfony new --version=4.4.x-dev --full $PROJECT_DIR  && cd $PROJECT_DIR
+    PROJECT_DIR=my-50 &&  symfony new --version=5.0.x-dev --full $PROJECT_DIR  && cd $PROJECT_DIR
     
-    composer req maker --dev
+    # composer config extra.symfony.allow-contrib true
 
     # interaction is required for the next commands, so if you're cutting and pasting, stop here!
     bin/console make:user 
@@ -46,8 +48,6 @@ The bundle assumes you've created your project from the base website skeleton
     # composer req survos/landing-bundle
     
     bin/console survos:init
-
-    
     
 
 ### Integrating Facebook
@@ -64,6 +64,7 @@ See [docs/recommended_bundles]
 
     composer config repositories.survoslanding '{"type": "path", "url": "../Survos/LandingBundle"}'
     composer req survos/landing-bundle:"*@dev"
+
 
 #### Normal installation
 
@@ -88,13 +89,22 @@ If you chosen to integrate the userbundle, update the schema and add an admin
     bin/console doctrine:schema:update --force
     bin/console msgphp:make:user
 
-    symfony server:start 
+    symfony server:start --no-tls
     
 When finished, the application will have a basic landing page with top navigation, optionally including login/registration pages.  Logged in users with ROLE_ADMIN will also (optionally) have links to easyadmin and api-platform.  
 
 ### Customizing the bundle
 
 ### Deploy to heroku
+
+
+
+    composer config --unset repositories.survoslanding && composer update
+    git commit -m "unset survoslanding" . && git push heroku master
+
+https://devcenter.heroku.com/articles/deploying-symfony4
+bin/console survos:setup-heroku
+
 
 
    

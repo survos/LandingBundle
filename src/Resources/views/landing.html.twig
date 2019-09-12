@@ -1,7 +1,7 @@
 {% extends ['base.html.twig', "SurvosLandingBundle::base.html.twig"] %}
 
 {# from https://getbootstrap.com/docs/4.3/examples/jumbotron/ #}
-{% block title "Default Survos Landing Page" %}
+{% block title "Landing Page" %}
 
 {% block test_navbar %}
     {% set menuHtml %}
@@ -75,10 +75,10 @@
                     </li>
                 {% else %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ path('login') }}">Login</a>
+                        <a class="nav-link" href="{{ path('app_login') }}">Login</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ path('register') }}">Register</a>
+                        <a class="nav-link" href="{{ path('app_register') }}">Register</a>
                     </li>
                 {% endif %}
                 <li class="nav-item">
@@ -99,13 +99,13 @@
         <!-- Heading Row -->
         <div class="row my-4">
             <div class="col-lg-8">
-                <img class="img-fluid rounded" src="http://placehold.it/600x200?text={{ title|default(app.request.server.get('SERVER_NAME')|default('title'))}}" alt="">
+                <img class="img-fluid rounded" src="http://placehold.it/600x200?text={{ 'home.title'|trans }}" alt="">
             </div>
             <!-- /.col-lg-8 -->
             <div class="col-lg-4">
-                <h1>{{ app.request.baseUrl }}</h1>
-                <p>{{ title|default(app.request.server.get('SERVER_NAME')|default('site message')) }} Description</p>
-                <a class="btn btn-primary btn-lg" href="#">Call to Action!</a>
+                <h1>{{ 'home.title'|trans }}</h1>
+                <p>{{ 'home.description'|trans|raw }}</p>
+                <a class="btn btn-primary btn-lg" href="#">{{ 'home.call-to-action'|trans }} </a>
             </div>
 
             <!-- /.col-md-4 -->
@@ -115,9 +115,7 @@
         <!-- Call to Action Well -->
         <div class="card text-white bg-secondary my-4 text-center">
             <div class="card-body text-danger">
-                <i class="fas fa-skull-crossbones"></i>Warning
-
-                <p class="text-white m-0">{{ 'home.intro'|trans }}</p>
+                <p class="text-white m-0">{{ 'home.intro'|trans|raw }}</p>
             </div>
         </div>
 
@@ -127,9 +125,9 @@
     <!-- /.container -->
 
     <!-- Footer -->
-    <footer class="py-5 bg-dark">
+    <footer class="py-2 bg-dark">
         <div class="container">
-            <p class="m-0 text-center text-white">Copyright &copy;</p>
+            <p class="m-0 text-center text-white">Copyright &copy; {{ "now"|date('Y') }}</p>
         </div>
         <!-- /.container -->
     </footer>

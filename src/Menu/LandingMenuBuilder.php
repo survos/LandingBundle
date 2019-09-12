@@ -49,7 +49,7 @@ class LandingMenuBuilder
         // hack?  Seems like this should be in the renderer.  Top Level ul tag
         $menu->setChildrenAttribute('class', 'navbar-nav mr-auto');
 
-        if (true || $this->authorizationChecker->isGranted('ROLE_ADMIN')) {
+        if ($this->authorizationChecker->isGranted('ROLE_ADMIN')) {
             try {
                 $menu->addChild(
                     'easyadmin',
@@ -119,6 +119,8 @@ class LandingMenuBuilder
 
                 }
 
+                // go through all the social media options
+
                 try {
                     $dropdown->addChild(
                         'github_login',
@@ -126,7 +128,23 @@ class LandingMenuBuilder
                             'route' => 'connect_github_start',
                             'attributes' => [
                                 // 'divider_prepend' => true,
-                                'icon' => 'fas fa-github',
+                                'icon' => 'fab fa-github',
+                            ],
+                        ]
+                    );
+                } catch (RouteNotFoundException $e) {
+                    // the route is not defined..., bin/console make:registration-form
+
+                }
+
+                try {
+                    $dropdown->addChild(
+                        'google_login',
+                        [
+                            'route' => 'connect_google_start',
+                            'attributes' => [
+                                // 'divider_prepend' => true,
+                                'icon' => 'fab fa-google',
                             ],
                         ]
                     );

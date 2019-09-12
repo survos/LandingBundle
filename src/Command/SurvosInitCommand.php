@@ -16,7 +16,7 @@ use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Yaml\Yaml;
 
-class SurvosPrepareCommand extends Command
+class SurvosInitCommand extends Command
 {
     protected static $defaultName = 'survos:init';
 
@@ -59,12 +59,20 @@ class SurvosPrepareCommand extends Command
         ;
     }
 
+    private function getAppCode() {
+        // app code is the directory
+        $app_code = basename($this->kernel->getProjectDir());
+       return $app_code;
+    }
+
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->io = $io = new SymfonyStyle($input, $output);
 
+        // $this->handleFavicon($io);
         // https://favicon.io/favicon-generator/?t=Fa&ff=Lancelot&fs=99&fc=%23FFFFFF&b=rounded&bc=%23B4B
 
+        $this->createTranslations($io);
         $this->checkYarn($io);
         $this->setupDatabase($io);
         $this->updateBase($io);
@@ -95,6 +103,22 @@ class SurvosPrepareCommand extends Command
         }
     }
 
+    private function createTranslations(SymfonyStyle $io) {
+        $fn = '/translations/messages.en.yaml'; // @todo: get current default language code
+        if ($io->confirm("Replace $fn?")) {
+            $appCode = $this->getAppCode();
+            $t = [
+                'home' => [
+                    'intro' => "Intro to $appCode",
+                    'title' => "$appCode Title",
+                    'description' => "Edit <code>$fn</code> and change the messages to reflect what $appCode is all about! You <b>CAN</b> use HTML!"
+                ]
+            ];
+            $this->writeFile($fn, Yaml::dump($t, 5));
+        }
+    }
+
+
     private function checkYarn(SymfonyStyle $io)
     {
         if (!file_exists($this->projectDir . '/yarn.lock')) {
@@ -119,7 +143,6 @@ class SurvosPrepareCommand extends Command
             if (!file_exists($fn = $this->projectDir . '/.env.local')) {
                 file_put_contents($fn, "DATABASE_URL=sqlite:///%kernel.project_dir%/var/data.db");
             }
-
         }
     }
 
