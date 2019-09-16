@@ -2,9 +2,25 @@
 
 {% block body %}
 
+    <pre>
     User: {{ user.email }}
 
-    Google: {{ user.googleId }}
+        {# could be user.social('google') ??
+     Google: {{ user.googleId }}
+    #}
+
+    Password: {{ user.password }}
+
+    </pre>
+
+    <a href="{{ path('app_change_password') }}">Change Password</a>
+
+    {% if change_password_form %}
+    {{ form(change_password_form) }}
+    {% endif %}
+
+
+    {{ dump(user) }}
 
 
 {% endblock %}

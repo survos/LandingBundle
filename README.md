@@ -29,7 +29,7 @@ This bundle was created originally to isolate issues with other bundles and to g
 The bundle assumes you've created your project from the base website skeleton
 
 
-    PROJECT_DIR=my-app5 && symfony new --full $PROJECT_DIR && cd $PROJECT_DIR
+    PROJECT_DIR=fosuser && symfony new --full $PROJECT_DIR && cd $PROJECT_DIR
     PROJECT_DIR=my-44-app &&  symfony new --version=4.4.x-dev --full $PROJECT_DIR  && cd $PROJECT_DIR
     PROJECT_DIR=my-50 &&  symfony new --version=5.0.x-dev --full $PROJECT_DIR  && cd $PROJECT_DIR
     
@@ -48,7 +48,8 @@ The bundle assumes you've created your project from the base website skeleton
     # composer req survos/landing-bundle
     
     bin/console survos:init
-    
+     
+    # symfony run -d yarn encore dev --watch
 
 ### Integrating Facebook
 
