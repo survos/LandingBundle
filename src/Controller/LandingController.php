@@ -55,14 +55,14 @@ class LandingController extends AbstractController
     }
 
     /**
-     * @Route("/user_profile", name="app_profile")
+     * @Route("/profile", name="app_profile")
      */
     public function profile(Request $request)
     {
         $form = $this->createForm(ChangePasswordFormType::class);
         $form->handleRequest($request);
 
-        if ($form->isValid() && $form->isSubmitted()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             
         }
         return $this->render('@SurvosLanding/profile.html.twig', [
