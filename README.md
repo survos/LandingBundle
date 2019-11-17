@@ -30,7 +30,7 @@ The bundle assumes you've created your project from the base website skeleton
 
 
     PROJECT_DIR=fosuser && symfony new --full $PROJECT_DIR && cd $PROJECT_DIR
-    PROJECT_DIR=my-44-app &&  symfony new --version=4.4.x-dev --full $PROJECT_DIR  && cd $PROJECT_DIR
+    PROJECT_DIR=tc &&  symfony new --version=4.4.x-dev --full $PROJECT_DIR  && cd $PROJECT_DIR
     PROJECT_DIR=my-50 &&  symfony new --version=5.0.x-dev --full $PROJECT_DIR  && cd $PROJECT_DIR
     
     # composer config extra.symfony.allow-contrib true
@@ -43,6 +43,9 @@ The bundle assumes you've created your project from the base website skeleton
     # 
     
     composer config repositories.survoslanding '{"type": "path", "url": "../Survos/LandingBundle"}'
+
+    # at the moment, LandingBundle has a dependency on SwiftMailer
+    composer req mail
     composer req survos/landing-bundle:"*@dev"
 
     # composer req survos/landing-bundle

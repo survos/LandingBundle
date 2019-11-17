@@ -5,6 +5,7 @@ namespace Survos\LandingBundle\Menu;
 use Knp\Menu\FactoryInterface;
 use Knp\Menu\ItemInterface;
 use Knp\Menu\MenuItem;
+use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
@@ -16,17 +17,22 @@ class LandingMenuBuilder
     protected $factory;
     protected $authorizationChecker;
     private $security;
+    /**
+     * @var ClientRegistry
+     */
+    private $clientRegistry;
 
     /**
      * @param FactoryInterface $factory
      *
      * Add any other dependency you need
      */
-    public function __construct(FactoryInterface $factory, AuthorizationCheckerInterface $authorizationChecker, TokenStorageInterface $security)
+    public function __construct(FactoryInterface $factory, AuthorizationCheckerInterface $authorizationChecker, TokenStorageInterface $security, ClientRegistry $clientRegistry)
     {
         $this->factory = $factory;
         $this->authorizationChecker = $authorizationChecker;
         $this->security = $security;
+        $this->clientRegistry = $clientRegistry;
     }
 
     public function createMainMenu(array $options)
@@ -43,37 +49,67 @@ class LandingMenuBuilder
         return $this->cleanupMenu($menu);
     }
 
+    // check for social media.  Arguably a separate bundle or at least file
+    public function createSocialMenu(array $options = [])
+    {
+        $menu = $this->factory->createItem('root');
+        // hack?  Seems like this should be in the renderer.  Top Level ul tag
+        $menu->setChildrenAttribute('class', 'navbar-nav mr-auto');
+        foreach ($this->clientRegistry->getEnabledClientKeys() as $clientKey) {
+            $menu->addChild('connect_' . $clientKey, [
+                'route' => 'connect_start',
+                'routeParameters' => [
+                    'clientKey' => $clientKey
+                ]
+            ]);
+        }
+
+        $menu = $this->cleanupMenu($menu);
+
+        return $menu;
+
+    }
+
     public function createAuthMenu(array $options)
     {
         $menu = $this->factory->createItem('root');
         // hack?  Seems like this should be in the renderer.  Top Level ul tag
         $menu->setChildrenAttribute('class', 'navbar-nav mr-auto');
 
-        if ($this->authorizationChecker->isGranted('ROLE_ADMIN')) {
-            try {
-                $menu->addChild(
-                    'easyadmin',
-                    [
-                        'route' => 'easyadmin',
-                        'attributes' => [
-                            'icon' => 'fas fa-wrench',
-                        ],
-                    ]
-                );
-            } catch (RouteNotFoundException $e) {
-                // the route is not defined...
-            }
+        $loggedIn = false;
+        if ($user = $this->security->getToken()->getUser()) {
+            $loggedIn = is_object($user); // 'anon.' string
         }
 
-        $dropdown = $menu->addChild(
-            'my_account',
-            [
-                'label' => $this->security->getToken()->getUsername(),
-                'attributes' => [
-                    'dropdown' => true,
-                ],
-            ]
-        );
+
+        // if ($loggedIn)
+        if ($this->authorizationChecker->isGranted('ROLE_USER'))
+        {
+            if ($this->authorizationChecker->isGranted('ROLE_ADMIN')) {
+                try {
+                    $menu->addChild(
+                        'easyadmin',
+                        [
+                            'route' => 'easyadmin',
+                            'attributes' => [
+                                'icon' => 'fas fa-wrench',
+                            ],
+                        ]
+                    );
+                } catch (RouteNotFoundException $e) {
+                    // the route is not defined...
+                }
+            }
+
+            $dropdown = $menu->addChild(
+                'my_account',
+                [
+                    'label' => $this->security->getToken()->getUsername(),
+                    'attributes' => [
+                        'dropdown' => true,
+                    ],
+                ]
+            );
 
             if ($this->authorizationChecker->isGranted('ROLE_USER')) {
                 try {
@@ -101,9 +137,21 @@ class LandingMenuBuilder
                         ],
                     ]
                 );
-            } else {
 
-                try {
+            }
+        } else {
+            $dropdown = $menu->addChild(
+                'my_account',
+                [
+                    'label' => $this->security->getToken()->getUsername(),
+                    'attributes' => [
+                        'dropdown' => true,
+                    ],
+                ]
+            );
+
+
+            try {
                     $dropdown->addChild(
                         'Login',
                         [
@@ -168,7 +216,6 @@ class LandingMenuBuilder
 
                 }
             }
-
         try {
         } catch (RouteNotFoundException $e) {
                 // routes likely not loaded.

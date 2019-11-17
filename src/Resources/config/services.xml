@@ -31,14 +31,14 @@
 
         <service id="Survos\LandingBundle\Command\SurvosSetupCommand" class="Survos\LandingBundle\Command\SurvosSetupCommand" public="false">
             <argument type="service" id="kernel"></argument>
-            <argument type="service" id="doctrine"></argument>
+            <argument type="service" id="doctrine.orm.entity_manager"></argument>
             <argument type="service" id="twig"></argument>
             <tag name="console.command" />
         </service>
 
         <service id="Survos\LandingBundle\Command\SurvosInitCommand" class="Survos\LandingBundle\Command\SurvosInitCommand" public="false">
             <argument type="service" id="kernel"></argument>
-            <argument type="service" id="doctrine"></argument>
+            <argument type="service" id="doctrine.orm.entity_manager"></argument>
             <argument type="service" id="twig"></argument>
             <tag name="console.command" />
         </service>

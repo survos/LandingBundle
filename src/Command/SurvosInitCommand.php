@@ -41,11 +41,11 @@ class SurvosInitCommand extends Command
         'popper.js'
     ];
 
-    public function __construct(KernelInterface $kernel, Registry $registry, \Twig\Environment $twig, string $name = null)
+    public function __construct(KernelInterface $kernel, EntityManagerInterface $em, \Twig\Environment $twig, string $name = null)
     {
         parent::__construct($name);
         $this->kernel = $kernel;
-        $this->em = $registry->getEntityManager();
+        $this->em = $em;
         $this->projectDir = $kernel->getProjectDir();
         $this->twig = $twig;
     }

@@ -2,6 +2,7 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <img src="{{ asset('/favicon-16x16.png') }}" />
         {{ knp_menu_render('landing_menu', {'currentClass': 'active', 'template': '@SurvosLanding/knp_menu.html.twig'}) }}
+        {{ knp_menu_render('social_menu', {'currentClass': 'active', 'template': '@SurvosLanding/knp_menu.html.twig'}) }}
         {{ knp_menu_render('auth_menu', {'currentClass': 'active', 'template': '@SurvosLanding/knp_menu.html.twig'}) }}
     </div>
 </nav>

@@ -10,6 +10,9 @@ use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Survos\LandingBundle\Form\ChangePasswordFormType;
 use Survos\LandingBundle\LandingService;
+use SVG\Nodes\Shapes\SVGCircle;
+use SVG\Nodes\Texts\SVGText;
+use SVG\SVG;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -27,9 +30,6 @@ class LandingController extends AbstractController
 {
     private $landingService;
     private $entityManager;
-    /**
-     * @var \Swift_Mailer
-     */
     private $mailer;
     /**
      * @var UserProviderInterface
@@ -52,6 +52,39 @@ class LandingController extends AbstractController
     {
         return $this->render("@SurvosLanding/landing.html.twig", [
         ]);
+    }
+
+    /**
+     * @Route("/logo", name="app_logo")
+     */
+    public function logo(Request $request)
+    {
+        $image = new SVG(100, 100);
+        $doc = $image->getDocument();
+
+// circle with radius 20 and green border, center at (50, 50)
+        $doc->addChild(
+            (new SVGCircle(50, 50, 20))
+                ->setStyle('fill', 'none')
+                ->setStyle('stroke', '#0F0')
+                ->setStyle('stroke-width', '2px')
+        );
+
+        $doc->addChild(
+            (new SVGText('{Tn}', 33, 55))
+            ->setStyle('text-size', '12px')
+        );
+
+        return new Response($image, 200, ['Content-Type' => 'image/svg+xml']);
+
+// rasterize to a 200x200 image, i.e. the original SVG size scaled by 2.
+// the background will be transparent by default.
+        /*
+        $rasterImage = $image->toRasterImage(200, 200);
+
+        header('Content-Type: image/png');
+        imagepng($rasterImage);
+        */
     }
 
     /**
