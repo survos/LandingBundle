@@ -57,30 +57,34 @@
                         <span class="text-muted">(same as above)</span>
                     </td>
                 </tr>
+
+                {% for clientKey, clientObject in oauthClients %}
+                    {% set provider = clientObject.provider %}
+                    {% set client = clientObject.client %}
+
                 <tr>
-                    <td>Connect Facebook?</td>
+                    <td>Connect {{ clientKey }}?</td>
                     <td>
-                        <a href="https://symfonycasts.com/login/facebook" class="btn btn-block btn-social btn-facebook"><i class="fab fa-facebook"></i>Connect with Facebook</a>
+                        {% set token = user.getOAuthToken(clientKey) %}
+                        {% if token %}
+                            <i class="fas fa-thumbs-up text-success"></i><i class="fab fa-{{ clientKey }}"></i>Connected to  {{ clientKey|title }}</a>
+                        {% else %}
+                        <a href="{{ path('connect_start', {clientKey: clientKey })}}" class="btn btn-warning btn-block btn-social btn-{{ clientKey }}"><i class="fab fa-{{ clientKey }}"></i>Connect with {{ clientKey|title }}</a>
+                        {% endif %}
+                            </td>
+                    <td>
+                        {% if is_granted("ROLE_SUPER_ADMINX") %}
+                        <a href="{{ provider.apps_url }}">App Directory</a>
+                        <br />
+                        {% set appUrl = provider.app_url|format(clientObject.appId)  %}
+                        <a href="{{ appUrl }}">This App</a>
+                        {% endif %}
+                        {% set appUrl = provider.user_apps  %}
+                        <a title="{{ token }}" target="_blank" href="{{ appUrl }}">My {{ clientKey|title }} Apps</a>
                     </td>
                 </tr>
-                <tr>
-                    <td>Connect GitHub?</td>
-                    <td>
-                        <a href="https://symfonycasts.com/login/github" class="btn btn-block btn-social btn-github"><i class="fab fa-github"></i>Connect with GitHub</a>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Connect Twitter?</td>
-                    <td>
-                        <a href="https://symfonycasts.com/login/twitter" class="btn btn-block btn-social btn-twitter"><i class="fab fa-twitter"></i>Connect with Twitter</a>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Connect Symfony?</td>
-                    <td>
-                        <a href="https://symfonycasts.com/login/sensiolabs" class="btn btn-block btn-social btn-social-sl btn-success"><i class="sl-auth sl-auth-profile"></i>Connect with Symfony</a>
-                    </td>
-                </tr>
+                {% endfor %}
+
                 <tr>
                     <td>Subscribe to Newsletter?</td>
                     <td><strong>Yes</strong></td>

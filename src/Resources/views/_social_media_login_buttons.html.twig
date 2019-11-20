@@ -1,10 +1,8 @@
 
 <hr />
-Social Media Login
-
 {% for clientKey in clientKeys %}
 <button>
-    <a class="btn" href="{{ path('connect_start', {clientKey: 'github_controller'}) }}"><i class="fab fa-github fa-3x"></i> Login/Register with Github</a>
+    <a class="btn" href="{{ path('connect_start', {clientKey: clientKey}) }}"><i class="fab fa-{{clientKey}} fa-3x"></i> Use {{ clientKey|title }}</a>
 </button>
 {% endfor %}
 

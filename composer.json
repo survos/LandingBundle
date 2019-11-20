@@ -4,9 +4,10 @@
     "type": "symfony-bundle",
     "keywords": ["generator", "skeleton"],
     "require": {
-        "knplabs/knp-menu-bundle": "^2.0",
+        "knplabs/knp-menu-bundle": "*",
+        "knpuniversity/oauth2-client-bundle": "*",
         "twig/twig": "^2.5|^3.0",
-        "symfony/webpack-encore-bundle": "^1.6"
+        "symfony/webpack-encore-bundle": "^1.6|^2"
     },
     "require-dev": {
         "doctrine/doctrine-fixtures-bundle": "^3.0",

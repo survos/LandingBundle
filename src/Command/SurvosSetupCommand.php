@@ -31,7 +31,7 @@ class SurvosSetupCommand extends Command
     CONST recommendedBundles = [
         'EasyAdminBundle' => ['repo' => 'admin'],
         'SurvosWorkflowBundle' => ['repo' => 'survos/workflow-bundle'],
-        'MsgPhpUserBundle' => ['repo' => 'msgphp/user-bundle']
+        // 'MsgPhpUserBundle' => ['repo' => 'msgphp/user-bundle']
     ];
 
     CONST requiredJsLibraries = [
@@ -65,7 +65,7 @@ class SurvosSetupCommand extends Command
         ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->io = $io = new SymfonyStyle($input, $output);
 
@@ -77,6 +77,7 @@ class SurvosSetupCommand extends Command
         $this->createConfig($io);
 
         $io->success('Landing Configuration Complete.');
+        return 0;
     }
 
     private function checkYarn(SymfonyStyle $io)
@@ -151,9 +152,10 @@ services:
       - "@knp_menu.factory"
       - "@security.authorization_checker"
       - "@security.token_storage"
+      - "@knpu.oauth2.registry"
     tags:
       #      - { name: knp_menu.menu_builder, method: createMainMenu, alias: landing_menu } # The alias is what is used to retrieve the menu
-      - { name: knp_menu.menu_builder, method: createTestMenu, alias: test_menu }
+      - { name: knp_menu.menu_builder, method: createSocialMenu, alias: social_menu }
       - { name: knp_menu.menu_builder, method: createTestMenu, alias: landing_menu }
       - { name: knp_menu.menu_builder, method: createAuthMenu, alias: auth_menu }
 
@@ -163,6 +165,7 @@ services:
       - "@knp_menu.factory"
       - "@security.authorization_checker"
       - "@security.token_storage"
+      - "@knpu.oauth2.registry"
     tags:
       - { name: knp_menu.menu_builder, method: createMainMenu, alias: landing_menu }
 END;

@@ -1,0 +1,20 @@
+{% extends ['base.html.twig', "SurvosLandingBundle::base.html.twig"] %}
+
+{% block body %}
+
+    <ul>
+
+    {% for key, clientInfo in clients %}
+    {% set p = clientInfo.provider %}
+        {% set client = clientInfo.client %}
+        <li>{{ key }}:
+
+        <a href="{{ path('connect_check_with_controller', {clientKey: key}) }}">redirect</a>
+
+        {{ dump(client) }}
+        {{ dump(p) }}
+    </li>
+        {% endfor %}
+    </ul>
+
+{% endblock %}

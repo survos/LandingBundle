@@ -53,7 +53,7 @@ class SurvosInitCommand extends Command
     {
 
         $this
-            ->setDescription('Prepares environment after installing web-skeleton')
+            ->setDescription('Basic environment: landing page, yarn install, sqlite in .env.local, ')
             ->addArgument('arg1', InputArgument::OPTIONAL, 'Argument description')
             ->addOption('option1', null, InputOption::VALUE_NONE, 'Option description')
         ;
@@ -65,7 +65,7 @@ class SurvosInitCommand extends Command
        return $app_code;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->io = $io = new SymfonyStyle($input, $output);
 
@@ -87,13 +87,20 @@ class SurvosInitCommand extends Command
                     'resource' => '@SurvosLandingBundle/Controller/LandingController.php',
                     'prefix' => $prefix,
                     'type' => 'annotation'
-                ]
+                ],
+                'survos_landing_bundle_oauth' => [
+                    'resource' => '@SurvosLandingBundle/Controller/OAuthController.php',
+                    'prefix' => $prefix,
+                    'type' => 'annotation'
+                ],
+
             ];
             file_put_contents($output = $this->projectDir . $fn, Yaml::dump($config));
             $io->comment($fn . " written.");
         }
 
         $io->success("Run xterm -e \"yarn run encore dev-server\" & install more bundles, then run bin/console survos:setup");
+        return 0;
     }
 
     private function updateBase(SymfonyStyle $io) {
@@ -128,17 +135,6 @@ class SurvosInitCommand extends Command
     }
 
     private function setupDatabase(SymfonyStyle $io) {
-        if ($io->confirm('Remove MySQL-specific DBAL configuration (for SQLite or Postgres)?', true)) {
-            $config = Yaml::parseFile($configFile = $this->projectDir . '/config/packages/doctrine.yaml');
-
-            $replaceDbal = [
-                'url' => $config['doctrine']['dbal']['url']
-            ];
-
-            $config['doctrine']['dbal'] = $replaceDbal;
-            file_put_contents($configFile, Yaml::dump($config,6));
-        }
-
         if ($io->confirm('Use sqlite database in .env.local', true)) {
             if (!file_exists($fn = $this->projectDir . '/.env.local')) {
                 file_put_contents($fn, "DATABASE_URL=sqlite:///%kernel.project_dir%/var/data.db");

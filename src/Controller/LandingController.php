@@ -99,7 +99,10 @@ class LandingController extends AbstractController
             
         }
         return $this->render('@SurvosLanding/profile.html.twig', [
+
             'user' => $this->getUser(),
+            'oauthClients' => $this->landingService->getOauthClients(),
+            'oauthClientKeys' => $this->landingService->getOauthClientKeys(),
             'change_password_form' => $form->createView()
         ]);
 
