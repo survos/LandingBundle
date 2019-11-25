@@ -70,6 +70,10 @@ class LandingMenuBuilder
 
     }
 
+    public function isGranted($attribute) {
+        return $this->authorizationChecker->isGranted($attribute);
+    }
+
     public function createAuthMenu(array $options)
     {
         $menu = $this->factory->createItem('root');
