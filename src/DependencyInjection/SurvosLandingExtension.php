@@ -24,12 +24,14 @@ class SurvosLandingExtension extends Extension
 
         /* @todo: add menu items based on what bundles are installed (EasyAdminBundle, etc.) */
         $bundles = $container->getParameter('kernel.bundles');
-        if (!isset($bundles['KnpUOAuth2ClientBundle'])) {
-            throw new \InvalidArgumentException(
-                'The bundle ... needs to be registered in order to use AcmeDemoBundle.'
-            );
-            $def = $container->findDefinition('oauth2.registry');
-            dd($def, $container);
+        foreach (['KnpUOAuth2ClientBundle'] as $bundleName) {
+            if (!isset($bundles[$bundleName])) {
+                throw new \InvalidArgumentException(
+                    "The bundle $bundleName needs to be registered in order to use ".  __CLASS__
+                );
+                $def = $container->findDefinition('oauth2.registry');
+                dd($def, $container);
+            }
         }
         // dd($bundles); die();
 

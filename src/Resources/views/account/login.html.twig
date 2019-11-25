@@ -69,7 +69,7 @@
                                 Don't have an account? <a href="{{ path('app_register')}}">Create One</a>
                             </div>
                             <div class="mt-4 text-center">
-                                {% include "@SurvosLanding/_social_media_login_buttons.html.twig" with {} %}
+                                {{ render(controller('Survos\\LandingBundle\\Controller\\OAuthController::socialMediaButtons', { style: 'login' } )) }}
                             </div>
                         </form>
                     </div>
@@ -106,8 +106,9 @@
                value="{{ csrf_token('authenticate') }}"
         >
 
-        {% include "@SurvosLanding/_social_media_login_buttons.html.twig" %}
+        SOCIAL MEDIA CALL!!
         {#
+        {% include "@SurvosLanding/_social_media_login_buttons.html.twig" %}
             Uncomment this section and add a remember_me option below your firewall to activate remember me functionality.
             See https://symfony.com/doc/current/security/remember_me.html
 

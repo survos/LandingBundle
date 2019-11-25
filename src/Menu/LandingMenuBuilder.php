@@ -57,7 +57,7 @@ class LandingMenuBuilder
         $menu->setChildrenAttribute('class', 'navbar-nav mr-auto');
         foreach ($this->clientRegistry->getEnabledClientKeys() as $clientKey) {
             $menu->addChild('connect_' . $clientKey, [
-                'route' => 'connect_start',
+                'route' => 'oauth_connect_start',
                 'routeParameters' => [
                     'clientKey' => $clientKey
                 ]

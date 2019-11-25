@@ -3,7 +3,7 @@
 namespace Survos\LandingBundle\Controller;
 
 use App\Entity\User;
-use App\Security\AppEmailAuthenticator;
+use Survos\LandingBundle\Security\AppEmailAuthenticator;
 use Doctrine\ORM\EntityManagerInterface;
 use League\OAuth2\Client\Provider\Github;
 use League\OAuth2\Client\Provider\ResourceOwnerInterface;
@@ -18,6 +18,8 @@ use Symfony\Component\Security\Core\Authentication\AuthenticationManagerInterfac
 use Symfony\Component\Security\Core\Authentication\Provider\AuthenticationProviderInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Guard\GuardAuthenticatorHandler;
+use Symfony\Component\Security\Guard\PasswordAuthenticatedInterface;
+use Twig\Environment;
 
 class OAuthController extends AbstractController
 {
@@ -25,7 +27,8 @@ class OAuthController extends AbstractController
     /** @var ClientRegistry  */
     private $clientRegistry;
 
-    public function __construct(LandingService $landingService, EntityManagerInterface $entityManager, \Swift_Mailer $mailer, UserProviderInterface $userProvider)
+    public function __construct(LandingService $landingService,
+                                EntityManagerInterface $entityManager, \Swift_Mailer $mailer, UserProviderInterface $userProvider)
     {
         $this->landingService = $landingService;
         $this->entityManager = $entityManager;
@@ -37,54 +40,58 @@ class OAuthController extends AbstractController
 
     }
 
+    public function socialMediaButtons($style)
+    {
+        return $this->render('@SurvosLanding/_social_media_login_buttons.html.twig', [
+            'clientKeys' =>  $this->clientRegistry->getEnabledClientKeys(),
+            'clientRegistry' => $this->clientRegistry,
+            'style' => $style
+        ]);
+
+    }
+
     /**
-     * @Route("/oauth", name="oauth")
+     * @Route("/provider/{providerKey}", name="oauth_provider")
+     */
+    public function providerDetail(Request $request, $providerKey)
+    {
+        $provider = $this->landingService->getCombinedOauthData()[$providerKey];
+
+        return $this->render('@SurvosLanding/oauth/provider.html.twig', [
+            'provider' => $provider
+            ]);
+
+    }
+
+    /**
+     * @Route("/providers", name="oauth_providers")
      */
     public function index(Request $request)
     {
 
         $oauthClients = $this->landingService->getOauthClients();
-
         $clientRegistry = $this->clientRegistry;
 
         $refresh = $request->get('refresh', false);
 
-        $clients = array_map(function (string $clientKey ) use ($clientRegistry, $refresh) {
-            $client = $clientRegistry->getClient($clientKey);
+        // what we want is ALL the available clients, with their configuration if available.
 
-            dump($client->redirect());
+        // could move the array_map into the service call
+        $clients = $this->landingService->getCombinedOauthData();
 
-            // makes a call to the API to get the basic information, not a login\
-            if ($refresh) {
-                $apiInfo = $client->getOAuth2Provider()->getResourceOwnerDetailsUrl($client->getAccessToken());
-                dump($apiInfo);
-            }
-
-            $redirect = $client->redirect([], []);
-            $provider = $client->getOAuth2Provider();
-
-            //
-            // dd($provider, $provider->getGuarded(), $provider->getHeaders(), $provider->getHttpClient());
-            return [
-                'key' => $clientKey,
-                'type' => get_class($provider),
-                'redirect' => $redirect
-            ];
-        }, $clientRegistry->getEnabledClientKeys());
-
-//        dd($clients);
-
-        return $this->render('@SurvosLanding/oauth/oauth_clients.html.twig', [
-            'clients' => $oauthClients,
+        return $this->render('@SurvosLanding/oauth/providers.html.twig', [
+            'clients' => $clients,
+            /*
             'clientKeys' =>  $clientRegistry->getEnabledClientKeys(),
             'clientRegistry' => $clientRegistry
+            */
         ]);
     }
 
     /**
      * Link to this controller to start the "connect" process
      *
-     * @Route("/social_login/{clientKey}", name="connect_start")
+     * @Route("/social_login/{clientKey}", name="oauth_connect_start")
      */
     public function connectAction(string $clientKey)
     {
@@ -100,7 +107,7 @@ class OAuthController extends AbstractController
         // will redirect to an external OAuth server
         $redirect =  $this->clientRegistry
             ->getClient($clientKey) // key used in config/packages/knpu_oauth2_client.yaml
-            ->redirect($scopes[$clientKey], [])
+            ->redirect($scopes[$clientKey] ?? [], [])
             ;
         // dd($redirect);
         return $redirect;
@@ -130,6 +137,85 @@ class OAuthController extends AbstractController
         }
         return new RedirectResponse($targetUrl);
 
+    }
+
+    /**
+     * This is where the user is redirected to after logging into the OAuth server,
+     * see the "redirect_route" in config/packages/knpu_oauth2_client.yaml
+     *
+     * @\Symfony\Component\Routing\Annotation\Route("/connect/controller/{clientKey}", name="oauth_connect_check")
+     */
+    public function connectCheckWithController(Request $request,
+                                               ClientRegistry $clientRegistry,
+                                               \Doctrine\ORM\EntityManagerInterface $em,
+                                               GuardAuthenticatorHandler $guardHandler,
+                                               AppEmailAuthenticator $authentication,
+                                               UserProviderInterface $userProvider,
+                                               $clientKey
+    )
+    {
+        // return new RedirectResponse($this->generateUrl('app_homepage'));
+
+
+        /** @var \KnpU\OAuth2ClientBundle\Client\Provider\GithubClient $client */
+
+        dump($clientKey);
+        $client = $clientRegistry->getClient($clientKey);
+        dump($client);
+
+        // the exact class depends on which provider you're using
+        /** @var \League\OAuth2\Client\Provider\GithubResourceOwner $user */
+        $user = $client->fetchUser();
+
+        // github users don't have an email, so we have to fetch it.
+        $email = $user->getEmail();
+
+        // now presumably we need to link this up.
+        $token = $user->getId();
+
+        // do something with all this new power!
+        // e.g. $name = $user->getFirstName();
+
+        // if we have it, just log them in.  If not, direct to register
+
+
+        // it seems that loadUserByUsername redirects to logig
+        // if ($user = $userProvider->loadUserByUsername($email)) {
+        if ($user = $em->getRepository(User::class)->findOneBy(['email' => $email])) {
+// after validating the user and saving them to the database
+            // authenticate the user and use onAuthenticationSuccess on the authenticator
+            if ($user->getId()) {
+                return $guardHandler->authenticateUserAndHandleSuccess(
+                    $user,          // the User object you just created
+                    $request,
+                    $authentication, // authenticator whose onAuthenticationSuccess you want to use
+                    'main'          // the name of your firewall in security.yaml
+                );
+            } else {
+                return new RedirectResponse($this->generateUrl('app_register', ['email' => $email, 'githubId = ']));
+            }
+
+
+        } else {
+
+            // redirect to register, with the email pre-filled
+
+            // return new RedirectResponse($this->generateUrl('app_register'));
+            return new RedirectResponse($this->generateUrl('app_register', ['email' => $email, 'githubId' => $token]));
+
+        }
+
+
+        try {
+            // ...
+        } catch (IdentityProviderException $e) {
+            // something went wrong!
+            // probably you should return the reason to the user
+            echo $e->getResponseBody();
+            dd($e,  $e->getMessage());
+        }
+
+        return new RedirectResponse($this->generateUrl('app_register', ['email' => $email, 'githubId = ']));
     }
 
 

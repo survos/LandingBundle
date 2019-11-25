@@ -69,7 +69,7 @@
                         {% if token %}
                             <i class="fas fa-thumbs-up text-success"></i><i class="fab fa-{{ clientKey }}"></i>Connected to  {{ clientKey|title }}</a>
                         {% else %}
-                        <a href="{{ path('connect_start', {clientKey: clientKey })}}" class="btn btn-warning btn-block btn-social btn-{{ clientKey }}"><i class="fab fa-{{ clientKey }}"></i>Connect with {{ clientKey|title }}</a>
+                        <a href="{{ path('oauth_connect_start', {clientKey: clientKey })}}" class="btn btn-warning btn-block btn-social btn-{{ clientKey }}"><i class="fab fa-{{ clientKey }}"></i>Connect with {{ clientKey|title }}</a>
                         {% endif %}
                             </td>
                     <td>

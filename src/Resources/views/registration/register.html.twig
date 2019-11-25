@@ -8,6 +8,9 @@
 {% endblock %}
 
 {% block body %}
+    {% if app.environment == 'dev' %}
+        <a href="{{ path('oauth_providers') }}">OAuth Provider Admin</a>
+    {% endif %}
     <div  class="my-login-page">
     <section class="h-100"><!-- column height 100% -->
         <div class="container h-100">
@@ -50,16 +53,18 @@
 
                             {{ form_end(registrationForm) }}
 
+                            <div class="mt-4 text-center">
+                                {{ render(controller('Survos\\LandingBundle\\Controller\\OAuthController::socialMediaButtons', { style: 'login' } )) }}
+                            </div>
 
 
                                 <div class="mt-4 text-center">
-                                    Already have an account? <a href="index.html">Login</a>
+                                    Already have an account? <a href="{{ path('app_login')}}">Login</a>
                                 </div>
-                            </form>
                         </div>
                     </div>
                     <div class="footer">
-                        Copyright &copy; 2017 &mdash; Your Company
+                        Copyright &copy; 2018 - {{ "now"|date('Y') }} Survos
                     </div>
                 </div>
             </div>

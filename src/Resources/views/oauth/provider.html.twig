@@ -1,0 +1,52 @@
+{% extends ['base.html.twig', "SurvosLandingBundle::base.html.twig"] %}
+
+{% block title 'Provider ' ~ provider.type %}
+{% block body %}
+
+    {% if provider.clients|length %}
+    <h3>Configured Clients</h3>
+    <ul class="list inline-list">
+        {% for clientKey, client in provider.clients %}
+            <li><a href="{{ path('oauth_connect_start', {clientKey: clientKey}) }}" class="btn btn-primary">
+                Login With {{ clientKey }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    <h3>Install the provider library</h3>
+
+    composer req {{ provider.library }}
+
+    <h3>Setup your environment (.env)</h3>
+    <textarea cols="80" rows="2">{% for var in provider.env_vars %}{{ var }}=~
+{% endfor %}</textarea>
+
+    <h3>Install and register the client in config/packages/knpu_oauth_clients.yaml</h3>
+
+<textarea cols="80" rows="{{ provider.comments|split("\n")|length + 1 }}">{{ provider.comments }}
+</textarea>
+
+    <h3>Client ID and Secret</h3>
+    Register your app, making sure to set your callback url in the configuration:<br />
+    {% if provider.apps_url %}
+    <a href="{{ provider.apps_url }}" target="_blank" class="btn btn-primary"><i class="fas fa-external-link"></i> {{ provider.type|title }} Apps</a>
+    {% else %}
+        Sorry, we don't yet have the url for the {{ provider.type|title }} Apps Page.
+    {% endif %}
+
+    {% set clientKey = provider.type %}
+
+    {# https://stackoverflow.com/questions/22581345/click-button-copy-to-clipboard-using-jquery #}
+    {% set callback = url('oauth_connect_check', {clientKey: clientKey})   %}
+    <textarea cols="90" rows="1">{{ callback }}</textarea>
+    <a href="{{ callback }}" target="_blank"><i class="fas fa-external-link"></i></a>
+
+
+    <h3>Configure live keys (.env.local)</h3>
+<textarea cols="80" rows="2">{% for var in provider.env_vars %}{{ var }}=
+{% endfor %}</textarea>
+
+
+
+{% endblock %}

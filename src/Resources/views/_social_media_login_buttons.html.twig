@@ -1,8 +1,9 @@
 
 <hr />
+<h1>{{ style }}</h1>
 {% for clientKey in clientKeys %}
 <button>
-    <a class="btn" href="{{ path('connect_start', {clientKey: clientKey}) }}"><i class="fab fa-{{clientKey}} fa-3x"></i> Use {{ clientKey|title }}</a>
+    <a class="btn" href="{{ path('oauth_connect_start', {clientKey: clientKey}) }}"><i class="fab fa-{{clientKey}} fa-3x"></i> Use {{ clientKey|title }}</a>
 </button>
 {% endfor %}
 

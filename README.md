@@ -22,17 +22,20 @@ This bundle was created originally to isolate issues with other bundles and to g
 * composer
 * PHP 7.1+
 * yarn
-* Symfony Server (or another web server, like nginx)
+* Symfony CLI (for running a local server, creating project, etc.)
 
 ### Using the bundle
 
 The bundle assumes you've created your project from the base website skeleton
 
+    DIR=symfony5-bundle-test && mkdir $DIR && cd $DIR && symfony new --full . 
+    composer require martin-georgiev/social-post-bundle
 
-    PROJECT_DIR=fosuser && symfony new --full $PROJECT_DIR && cd $PROJECT_DIR
+    DIR=spb4 && mkdir $DIR && cd $DIR && symfony new --version=4.4 --full . 
+    composer require martin-georgiev/social-post-bundle
 
-    PROJECT_DIR=test6 &&  symfony new --version=4.4.x-dev --full $PROJECT_DIR  && cd $PROJECT_DIR && symfony proxy:domain:attach $PROJECT_DIR.survos.com
-    PROJECT_DIR=my-50 &&  symfony new --version=5.0.x-dev --full $PROJECT_DIR  && cd $PROJECT_DIR
+
+
     
     # composer config extra.symfony.allow-contrib true
 
@@ -49,7 +52,14 @@ The bundle assumes you've created your project from the base website skeleton
     
     # Now install the Landing (SurvosBase?) bundle
     
+    # Until all bundles support Symfony5, you may need to allow dev
+    
+    composer config minimum-stability dev
+
     composer config repositories.survoslanding '{"type": "path", "url": "../Survos/LandingBundle"}'
+    composer config repositories.social_post_bundle '{"type": "path", "url": "../Survos/social-post-bundle"}'
+
+    composer config repositories.social_post_bundle '{"type": "vcs", "url": "https://github.com/tacman/social-post-bundle"}'
 
     # at the moment, LandingBundle has a dependency on SwiftMailer
     composer req mail
