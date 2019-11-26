@@ -10,6 +10,7 @@ use League\OAuth2\Client\Provider\ResourceOwnerInterface;
 use Survos\LandingBundle\LandingService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
@@ -28,12 +29,11 @@ class OAuthController extends AbstractController
     private $clientRegistry;
 
     public function __construct(LandingService $landingService,
-                                EntityManagerInterface $entityManager, \Swift_Mailer $mailer, UserProviderInterface $userProvider)
+                                EntityManagerInterface $entityManager, UserProviderInterface $userProvider)
     {
         $this->landingService = $landingService;
         $this->entityManager = $entityManager;
 
-        $this->mailer = $mailer;
         $this->userProvider = $userProvider;
 
         $this->clientRegistry = $this->landingService->getClientRegistry();

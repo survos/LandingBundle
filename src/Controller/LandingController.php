@@ -20,7 +20,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\KernelInterface;
-use Symfony\Component\HttpKernel\Tests\Exception\NotFoundHttpExceptionTest;
+use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGenerator;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -36,7 +36,7 @@ class LandingController extends AbstractController
      */
     private $userProvider;
 
-    public function __construct(LandingService $landingService, EntityManagerInterface $entityManager, \Swift_Mailer $mailer, UserProviderInterface $userProvider)
+    public function __construct(LandingService $landingService, EntityManagerInterface $entityManager, MailerInterface $mailer, UserProviderInterface $userProvider)
     {
         $this->landingService = $landingService;
         $this->entityManager = $entityManager;
