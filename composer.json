@@ -2,7 +2,7 @@
     "name": "survos/landing-bundle",
     "description": "Add some tools and resources to a Symfony4.4/Symfony5 application",
     "type": "symfony-bundle",
-    "keywords": ["generator", "skeleton, symfony4, symfony5"],
+    "keywords": ["generator", "skeleton" ,"symfony4", "symfony5"],
     "require": {
         "knplabs/knp-menu": "^3.0",
         "symfony/mailer": "*",
