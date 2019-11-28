@@ -41,21 +41,23 @@ class UserCreateCommand extends Command
             ->addArgument('email', InputArgument::REQUIRED, 'email address of account')
             ->addArgument('password', InputArgument::OPTIONAL, 'Plain text password')
             ->addOption('roles', null, InputOption::VALUE_OPTIONAL, 'comma-delimited list of roles')
+            ->addOption('password', null, InputOption::VALUE_NONE, 'Update password')
             ->addOption('force', null, InputOption::VALUE_NONE, 'Change password/roles if account exists.')
         ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
         $force = $input->getOption('force');
+        $password = $input->getOption('password');
         $email = $input->getArgument('email');
 
         try {
             $user = $this->userProvider->loadUserByUsername($email);
-            if (!$force) {
-                $io->error("$email already exists, use --force to overwrite the existing password");
-                exit(1); // ??
+            if (!$password && !$input->getOption('roles') ) {
+                $io->error("$email already exists, use --password to overwrite the existing password");
+                return 1;
             } else {
                 $action = 'updated';
             }
@@ -66,7 +68,7 @@ class UserCreateCommand extends Command
             $this->entityManager->persist($user);
         }
 
-        if (!$plainTextPassword = $input->getArgument('password')) {
+        if ( (!$plainTextPassword = $input->getArgument('password')) || $password) {
             // password prompt
                 $question = new Question('Please choose a password:');
                 $question->setValidator(function ($password) {
@@ -104,5 +106,6 @@ class UserCreateCommand extends Command
         }
 
         $io->success("User $email $action");
+        return 0;
     }
 }

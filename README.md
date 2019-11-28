@@ -57,6 +57,8 @@ The bundle assumes you've created your project from the base website skeleton
     composer config minimum-stability dev
 
     composer config repositories.survoslanding '{"type": "path", "url": "../Survos/LandingBundle"}'
+    
+    
     composer config repositories.social_post_bundle '{"type": "path", "url": "../Survos/social-post-bundle"}'
 
     composer config repositories.social_post_bundle '{"type": "vcs", "url": "https://github.com/tacman/social-post-bundle"}'
@@ -65,6 +67,8 @@ The bundle assumes you've created your project from the base website skeleton
     composer req mail
     composer req symfony/mailer
     composer req survos/landing-bundle:"*@dev"
+
+OR
 
     # composer req survos/landing-bundle
 
