@@ -25,7 +25,7 @@
 {% block flashMessages %}
     {# pass a string argument to get only the messages of that type #}
     {% for message in app.session.flashBag.all %}
-        <div class="alert alert-notice">
+        <div class="flash-notice alert alert-notice">
             {{ message|join('<br />') }}
         </div>
     {% endfor %}
