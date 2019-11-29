@@ -156,12 +156,16 @@ class OAuthController extends AbstractController
     {
         // return new RedirectResponse($this->generateUrl('app_homepage'));
 
+        if ($error = $request->get('error')) {
+            $this->addFlash('error', $error);
+            $this->addFlash('error', $request->get('error_description'));
+            return $this->redirectToRoute('app_login');
+        }
+
 
         /** @var \KnpU\OAuth2ClientBundle\Client\Provider\GithubClient $client */
 
-        dump($clientKey);
         $client = $clientRegistry->getClient($clientKey);
-        dump($client);
 
         // the exact class depends on which provider you're using
         /** @var \League\OAuth2\Client\Provider\GithubResourceOwner $user */
