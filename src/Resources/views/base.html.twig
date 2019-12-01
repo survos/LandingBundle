@@ -20,7 +20,9 @@
 
 <body>
 
+{% block navigation %}
 {% include "@SurvosLanding/navbar.html.twig" %}
+{% endblock %}
 
 {% block flashMessages %}
     {# pass a string argument to get only the messages of that type #}

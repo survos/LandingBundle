@@ -3,6 +3,7 @@
 namespace Survos\LandingBundle\Controller;
 
 use App\Entity\User;
+use App\Security\AppAuthenticator;
 use Survos\LandingBundle\Security\AppEmailAuthenticator;
 use Doctrine\ORM\EntityManagerInterface;
 use League\OAuth2\Client\Provider\Github;
@@ -18,6 +19,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Authentication\AuthenticationManagerInterface;
 use Symfony\Component\Security\Core\Authentication\Provider\AuthenticationProviderInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
+use Symfony\Component\Security\Guard\Authenticator\AbstractFormLoginAuthenticator;
 use Symfony\Component\Security\Guard\GuardAuthenticatorHandler;
 use Symfony\Component\Security\Guard\PasswordAuthenticatedInterface;
 use Twig\Environment;
@@ -149,7 +151,7 @@ class OAuthController extends AbstractController
                                                ClientRegistry $clientRegistry,
                                                \Doctrine\ORM\EntityManagerInterface $em,
                                                GuardAuthenticatorHandler $guardHandler,
-                                               AppEmailAuthenticator $authentication,
+                                               AppAuthenticator $authentication,
                                                UserProviderInterface $userProvider,
                                                $clientKey
     )

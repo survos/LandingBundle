@@ -4,6 +4,7 @@
     "type": "symfony-bundle",
     "keywords": ["generator", "skeleton" ,"symfony4", "symfony5"],
     "require": {
+        "ext-json": "*",
         "knplabs/knp-menu": "^3.0",
         "symfony/mailer": "*",
         "knplabs/knp-menu-bundle": "^3.0@dev",

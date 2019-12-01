@@ -59,8 +59,6 @@ class LandingController extends AbstractController
      */
     public function logo(Request $request)
     {
-
-
         $image = new SVG(100, 100);
         $doc = $image->getDocument();
 

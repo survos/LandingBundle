@@ -114,11 +114,12 @@ class SurvosInitCommand extends Command
         $fn = '/translations/messages.en.yaml'; // @todo: get current default language code
         if ($io->confirm("Replace $fn?")) {
             $appCode = $this->getAppCode();
+            $appCode =  $io->ask("Short Code?", $appCode);
             $t = [
                 'home' => [
-                    'intro' => "Intro to $appCode",
-                    'title' => "$appCode Title",
-                    'description' => "Edit <code>$fn</code> and change the messages to reflect what $appCode is all about! You <b>CAN</b> use HTML!"
+                    'title' => $title = $io->ask('Title?', "$appCode Title"),
+                    'intro' => "Intro to $title",
+                    'description' => $io->ask('description?', "$appCode *Description*, in _markdown_")
                 ]
             ];
             $this->writeFile($fn, Yaml::dump($t, 5));

@@ -29,14 +29,7 @@ This bundle was created originally to isolate issues with other bundles and to g
 The bundle assumes you've created your project from the base website skeleton
 
     DIR=symfony5-bundle-test && mkdir $DIR && cd $DIR && symfony new --full . 
-    composer require martin-georgiev/social-post-bundle
 
-    DIR=spb4 && mkdir $DIR && cd $DIR && symfony new --version=4.4 --full . 
-    composer require martin-georgiev/social-post-bundle
-
-
-
-    
     # composer config extra.symfony.allow-contrib true
 
     # interaction is required for the next commands, so if you're cutting and pasting, stop here!
@@ -51,22 +44,25 @@ The bundle assumes you've created your project from the base website skeleton
     bin/console make:registration-form
     
     # Now install the Landing (SurvosBase?) bundle
-    
-    # Until all bundles support Symfony5, you may need to allow dev
-    
     composer config minimum-stability dev
 
     composer config repositories.survoslanding '{"type": "path", "url": "../Survos/LandingBundle"}'
     
+    composer config repositories.multisearch '{"type": "vcs", "url": "git@github.com:tacman/PetkoparaMultiSearchBundle.git"}'
+
+    composer config repositories.survoslanding '{"type": "vcs", "url": "https://github.com/survos/LandingBundle.git"}'
+
     
     composer config repositories.social_post_bundle '{"type": "path", "url": "../Survos/social-post-bundle"}'
 
     composer config repositories.social_post_bundle '{"type": "vcs", "url": "https://github.com/tacman/social-post-bundle"}'
 
-    # at the moment, LandingBundle has a dependency on SwiftMailer
-    composer req mail
-    composer req symfony/mailer
+    # this is needed because it creates MAILER_DSN, which isn't created otherwise
+    # composer req mail
+    composer req knplabs/knp-menu-bundle:"^3.0@dev"
+
     composer req survos/landing-bundle:"*@dev"
+    phpstorm .env
 
 OR
 
@@ -74,6 +70,8 @@ OR
 
     # creates survos_landing.yaml (a recipe would be nicer!)    
     bin/console survos:init
+    
+# Ugh, still doesn't work, needs a landing menu    
 
     # introspection, creates menus, looks for entities, easyadmin, etc.
     bin/console survos:configure
