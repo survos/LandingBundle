@@ -47,10 +47,15 @@ The bundle assumes you've created your project from the base website skeleton
     composer config minimum-stability dev
 
     composer config repositories.survoslanding '{"type": "path", "url": "../Survos/LandingBundle"}'
+    composer config repositories.phpspreadsheet '{"type": "path", "url": "../Survos/phpspreadsheet-bundle"}'
     
     composer config repositories.multisearch '{"type": "vcs", "url": "git@github.com:tacman/PetkoparaMultiSearchBundle.git"}'
+    
+    composer config repositories.captcha '{"type": "vcs", "url": "git@github.com:cyrilverloop/symfony-captcha-bundle.git"}'
 
     composer config repositories.survoslanding '{"type": "vcs", "url": "https://github.com/survos/LandingBundle.git"}'
+
+    composer config repositories.flowdemo '{"type": "path", "url": "../Survos/../CraueFormFlowDemoBundle"}'
 
     
     composer config repositories.social_post_bundle '{"type": "path", "url": "../Survos/social-post-bundle"}'

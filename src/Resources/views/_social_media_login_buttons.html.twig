@@ -9,6 +9,9 @@
 {% endfor %}
 {% endif %}
 
+{% if app.environment == 'dev' %}
+<a href="{{ path('oauth_providers') }}"><i class="fas fa-cogs"></i> Configure OAuth</a>
+{% endif %}
 {#
 <button>
     <a class="btn" href="{{ path('connect_github_start', {clientCode: 'github'}) }}"><i class="fab fa-github fa-3x"></i> Login with Github, using AUTH</a>

@@ -459,9 +459,9 @@ providers:
                         # use_state: true
             
                     
-        apps_url: 'https://developers.facebook.com/apps/'
-        app_url: 'https://developers.facebook.com/apps/%s/dashboard/'
-        user_apps: 'https://www.facebook.com/settings?tab=applications'
+        apps_url: 'https://developers.facebookId.com/apps/'
+        app_url: 'https://developers.facebookId.com/apps/%s/dashboard/'
+        user_apps: 'https://www.facebookId.com/settings?tab=applications'
     fitbit:
         type: fitbit
         client_id: '%env(OAUTH_FITBIT_CLIENT_ID)%'

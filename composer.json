@@ -5,6 +5,7 @@
     "keywords": ["generator", "skeleton" ,"symfony4", "symfony5"],
     "require": {
         "ext-json": "*",
+        "ext-zip": "*",
         "knplabs/knp-menu": "^3.0",
         "symfony/mailer": "*",
         "knplabs/knp-menu-bundle": "^3.0@dev",

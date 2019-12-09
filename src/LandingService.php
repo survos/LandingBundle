@@ -43,7 +43,7 @@ class LandingService
         // links to accont info
         $providers = $this->getOAuthProviderUrls();
 
-        // really need to get all TYPES (facebook, etc.), then group the clients under them, plus have the provider data.
+        // really need to get all TYPES (facebookId, etc.), then group the clients under them, plus have the provider data.
         // eventually we'll want an admin client to display the related apps
 
         $keys = $this->clientRegistry->getEnabledClientKeys();

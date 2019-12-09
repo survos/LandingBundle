@@ -3,8 +3,8 @@
 namespace Survos\LandingBundle\Controller;
 
 use App\Entity\User;
-use App\Security\AppAuthenticator;
-use Survos\LandingBundle\Security\AppEmailAuthenticator;
+# use App\Security\AppAuthenticator;
+use Survos\LandingBundle\Security\AppEmailAuthenticator as AppAuthenticator;
 use Doctrine\ORM\EntityManagerInterface;
 use League\OAuth2\Client\Provider\Github;
 use League\OAuth2\Client\Provider\ResourceOwnerInterface;
@@ -57,10 +57,27 @@ class OAuthController extends AbstractController
      */
     public function providerDetail(Request $request, $providerKey)
     {
+        $bundles = $this->getParameter('kernel.bundles');
         $provider = $this->landingService->getCombinedOauthData()[$providerKey];
 
+        // look in composer.lock for the library
+        $composer = $this->getParameter('kernel.project_dir') . '/composer.lock';
+        if (!file_exists($composer)) {
+            dd($composer);
+        }
+
+        $packages = json_decode(file_get_contents($composer))->packages;
+        $package = array_filter($packages, function ($package) use ($provider) {
+            return $provider['library'] === $package->name;
+        });
+
+
+        // dd($provider['class'], class_exists($provider['class']));
+
         return $this->render('@SurvosLanding/oauth/provider.html.twig', [
-            'provider' => $provider
+            'provider' => $provider,
+            'package' => $package,
+            'classExists' => class_exists($provider['class'])
             ]);
 
     }
@@ -103,7 +120,7 @@ class OAuthController extends AbstractController
                 'github' => [
                     "user:email", "read:user",
                 ],
-                'facebook' => []
+                'facebookId' => []
             ];
         ;
         // will redirect to an external OAuth server

@@ -14,6 +14,7 @@ use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
+use Symfony\Component\Routing\Generator\UrlGenerator;
 use Symfony\Component\Yaml\Yaml;
 
 class SurvosInitCommand extends Command
@@ -24,6 +25,8 @@ class SurvosInitCommand extends Command
     private $kernel;
     private $em;
     private $twig;
+
+    private $appCode;
 
     /** @var SymfonyStyle */
     private $io;
@@ -59,15 +62,23 @@ class SurvosInitCommand extends Command
         ;
     }
 
+    private function setAppCode($appCode) {
+        $this->appCode = $appCode;
+    }
+
     private function getAppCode() {
-        // app code is the directory
-        $app_code = basename($this->kernel->getProjectDir());
-       return $app_code;
+        // default  is the directory
+        if (empty($this->appCode)) {
+            $this->appCode = basename($this->kernel->getProjectDir());
+        }
+       return $this->appCode;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->io = $io = new SymfonyStyle($input, $output);
+
+        $this->createFavicon($io);
 
         // $this->handleFavicon($io);
         // https://favicon.io/favicon-generator/?t=Fa&ff=Lancelot&fs=99&fc=%23FFFFFF&b=rounded&bc=%23B4B
@@ -110,6 +121,46 @@ class SurvosInitCommand extends Command
         }
     }
 
+    private function createFavicon(SymfonyStyle $io)
+    {
+        $host = 'https://favicon.io/favicon-generator/?';
+        $params = [
+            't' => $this->getAppCode()
+        ];
+        $url = $host . http_build_query($params);
+        $io->writeln("Download zip file at $url");
+
+
+        $fn = $io->ask("zip file name?  Use ~ to skip", './favicon_io.zip');
+        if ($fn === '~') {
+            return;
+        }
+
+        if (!file_exists($fn)) {
+            // re-ask
+        }
+        $zip = new \ZipArchive();
+        if ($zip->open($fn) === TRUE) {
+            $publicDir = $this->projectDir . '/./public';
+            for($i = 0; $i < $zip->numFiles; $i++) {
+                $filename = $zip->getNameIndex($i);
+                $fileinfo = pathinfo($filename);
+                $io->writeln('Extracting ' . $filename . ' to ' . $publicDir);
+                if (!$zip->extractTo($publicDir, array($zip->getNameIndex($i)))) {
+                    $io->error(sprintf("Unable to extract %s to %s", $filename, $publicDir));
+                }
+                // copy("zip://".$path."#".$filename, "/your/new/destination/".$fileinfo['basename']);
+            }
+
+            // $zip->extractTo($publicDir);
+            $zip->close();
+            $io->success('Favicons extracted');
+        } else {
+            $io->error('Error extracting Favicons');
+            return -1;
+        }
+    }
+
     private function createTranslations(SymfonyStyle $io) {
         $fn = '/translations/messages.en.yaml'; // @todo: get current default language code
         if ($io->confirm("Replace $fn?")) {
@@ -136,7 +187,8 @@ class SurvosInitCommand extends Command
     }
 
     private function setupDatabase(SymfonyStyle $io) {
-        if ($io->confirm('Use sqlite database in .env.local', true)) {
+        $localExists = file_exists($fn = $this->projectDir . '/.env.local');
+        if (!$localExists && $io->confirm('Use sqlite database in .env.local', true)) {
             if (!file_exists($fn = $this->projectDir . '/.env.local')) {
                 file_put_contents($fn, "DATABASE_URL=sqlite:///%kernel.project_dir%/var/data.db");
             }

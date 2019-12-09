@@ -2,22 +2,30 @@
 
 namespace Survos\LandingBundle\Traits;
 
-trait FacebookTrait {
+trait FacebookTrait
+{
+    /**
+     * @ORM\Column(type="string", length=16, nullable=true)
+     */
+    private $facebookId = null;
 
-    public function getProject(): ?Project
+    /**
+     * @return string
+     */
+    public function getFacebookId(): ?string
     {
-        return $this->project;
+        return $this->facebookId;
     }
 
-    public function setProject(Project $project): self
+    /**
+     * @param string $facebookId
+     * @return self
+     */
+    public function setFacebookId(?string $facebookId)
     {
-        $this->project = $project;
+        $this->facebookId = $facebookId;
 
         return $this;
-    }
-
-    public function getProjectId(): ?int {
-        return $this->getProject() ? $this->getProject()->getId() : null;
     }
 
 }

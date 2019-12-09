@@ -15,6 +15,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
+use Symfony\Component\Security\Guard\GuardAuthenticatorHandler;
 
 class UserCreateCommand extends Command
 {
@@ -25,13 +26,20 @@ class UserCreateCommand extends Command
      * @var EntityManagerInterface
      */
     private $entityManager;
+    /**
+     * @var GuardAuthenticatorHandler
+     */
+    private $guardHandler;
 
-    public function __construct(UserPasswordEncoderInterface $passwordEncoder, UserProviderInterface $userProvider, EntityManagerInterface $entityManager,  string $name = null)
+    public function __construct(UserPasswordEncoderInterface $passwordEncoder,
+                                // GuardAuthenticatorHandler $guardHandler,
+                                UserProviderInterface $userProvider, EntityManagerInterface $entityManager,  string $name = null)
     {
         parent::__construct($name);
         $this->passwordEncoder = $passwordEncoder;
         $this->userProvider = $userProvider;
         $this->entityManager = $entityManager;
+//        $this->guardHandler = $guardHandler;
     }
 
     protected function configure()
@@ -88,6 +96,14 @@ class UserCreateCommand extends Command
 
         $user
             ->setPassword($this->passwordEncoder->encodePassword($user, $plainTextPassword));
+
+
+        $this->guardHandler->authenticateUserAndHandleSuccess(
+            $user,
+            $request,
+            $authenticator,
+            'main' // firewall name in security.yaml
+        );
 
         $this->entityManager->flush();
 

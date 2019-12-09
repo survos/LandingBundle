@@ -84,6 +84,7 @@ class LandingMenuBuilder
         }
 
 
+
         // if ($loggedIn)
         if ($this->authorizationChecker->isGranted('ROLE_USER'))
         {
