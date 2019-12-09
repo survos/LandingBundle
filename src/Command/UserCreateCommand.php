@@ -97,14 +97,7 @@ class UserCreateCommand extends Command
         $user
             ->setPassword($this->passwordEncoder->encodePassword($user, $plainTextPassword));
 
-
-        $this->guardHandler->authenticateUserAndHandleSuccess(
-            $user,
-            $request,
-            $authenticator,
-            'main' // firewall name in security.yaml
-        );
-
+        
         $this->entityManager->flush();
 
         if ($output->isVerbose()) {
