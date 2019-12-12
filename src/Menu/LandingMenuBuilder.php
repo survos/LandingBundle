@@ -2,10 +2,12 @@
 
 namespace Survos\LandingBundle\Menu;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Knp\Menu\FactoryInterface;
 use Knp\Menu\ItemInterface;
 use Knp\Menu\MenuItem;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
@@ -17,6 +19,9 @@ class LandingMenuBuilder
     protected $factory;
     protected $authorizationChecker;
     private $security;
+    protected $user;
+
+    protected $em;
     /**
      * @var ClientRegistry
      */
@@ -33,6 +38,7 @@ class LandingMenuBuilder
         $this->authorizationChecker = $authorizationChecker;
         $this->security = $security;
         $this->clientRegistry = $clientRegistry;
+        $this->user = $security->getToken()->getUser();
     }
 
     public function createMainMenu(array $options)
@@ -45,6 +51,17 @@ class LandingMenuBuilder
         // ... add more children
 
         return $this->cleanupMenu($menu);
+    }
+
+    public function setEntityManager(EntityManagerInterface $entityManager) {
+        $this->em = $entityManager;
+    }
+
+    public function getEntityManager(): EntityManagerInterface {
+        if (!$this->em) {
+            throw new \Exception("No entity manager, did you call setEntityManager in the calls: section in the service?");
+        }
+        return $this->em;
     }
 
     // check for social media.  Arguably a separate bundle or at least file
@@ -72,9 +89,16 @@ class LandingMenuBuilder
         return $this->authorizationChecker->isGranted($attribute);
     }
 
-    public function createAuthMenu(array $options)
+    public function createAuthMenu(array $options = []): ItemInterface
     {
-        $menu = $this->factory->createItem('root');
+        $options = (new OptionsResolver())
+            ->setDefaults([
+                'menu' => null
+            ])->resolve($options);
+        if (!$menu = $options['menu']) {
+            $menu = $this->factory->createItem('root');
+        }
+
         // hack?  Seems like this should be in the renderer.  Top Level ul tag
         $menu->setChildrenAttribute('class', 'navbar-nav mr-auto');
 
@@ -89,6 +113,9 @@ class LandingMenuBuilder
         if ($this->authorizationChecker->isGranted('ROLE_USER'))
         {
             if ($this->authorizationChecker->isGranted('ROLE_ADMIN')) {
+
+
+                /* no! This doesn't belong in authMenu!!
                 try {
                     $menu->addChild(
                         'easyadmin',
@@ -102,6 +129,7 @@ class LandingMenuBuilder
                 } catch (RouteNotFoundException $e) {
                     // the route is not defined...
                 }
+                */
             }
 
             $dropdown = $menu->addChild(
