@@ -166,7 +166,7 @@ class OAuthController extends AbstractController
      */
     public function connectCheckWithController(Request $request,
                                                ClientRegistry $clientRegistry,
-                                               \Doctrine\ORM\EntityManagerInterface $em,
+                                               EntityManagerInterface $em,
                                                GuardAuthenticatorHandler $guardHandler,
                                                AppAuthenticator $authentication,
                                                UserProviderInterface $userProvider,
@@ -208,6 +208,8 @@ class OAuthController extends AbstractController
 // after validating the user and saving them to the database
             // authenticate the user and use onAuthenticationSuccess on the authenticator
             if ($user->getId()) {
+                $user->setGithubId($token);
+
                 return $guardHandler->authenticateUserAndHandleSuccess(
                     $user,          // the User object you just created
                     $request,
