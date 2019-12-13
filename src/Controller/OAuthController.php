@@ -16,6 +16,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Authentication\AuthenticationManagerInterface;
 use Symfony\Component\Security\Core\Authentication\Provider\AuthenticationProviderInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
@@ -29,9 +30,16 @@ class OAuthController extends AbstractController
 
     /** @var ClientRegistry  */
     private $clientRegistry;
+    private $landingService;
+    /**
+     * @var RouterInterface
+     */
+    private $router;
 
     public function __construct(LandingService $landingService,
-                                EntityManagerInterface $entityManager, UserProviderInterface $userProvider)
+                                EntityManagerInterface $entityManager,
+                                RouterInterface $router,
+                                UserProviderInterface $userProvider)
     {
         $this->landingService = $landingService;
         $this->entityManager = $entityManager;
@@ -40,6 +48,7 @@ class OAuthController extends AbstractController
 
         $this->clientRegistry = $this->landingService->getClientRegistry();
 
+        $this->router = $router;
     }
 
     public function socialMediaButtons($style)
@@ -120,7 +129,7 @@ class OAuthController extends AbstractController
                 'github' => [
                     "user:email", "read:user",
                 ],
-                'facebookId' => []
+                'facebook' => []
             ];
         ;
         // will redirect to an external OAuth server
@@ -207,8 +216,13 @@ class OAuthController extends AbstractController
         if ($user = $em->getRepository(User::class)->findOneBy(['email' => $email])) {
 // after validating the user and saving them to the database
             // authenticate the user and use onAuthenticationSuccess on the authenticator
+            dump($user, $token, $email, $clientKey);
+            // if it's already in there, update the token.  This also happens with registration, so maybe belongs in LandingService?
             if ($user->getId()) {
-                $user->setGithubId($token);
+                switch ($clientKey) {
+                    case 'github': $user->setGithubId($token); break;
+                    default: throw new \Exception("Invalid client key " . $clientKey);
+                }
 
                 return $guardHandler->authenticateUserAndHandleSuccess(
                     $user,          // the User object you just created
@@ -226,7 +240,7 @@ class OAuthController extends AbstractController
             // redirect to register, with the email pre-filled
 
             // return new RedirectResponse($this->generateUrl('app_register'));
-            return new RedirectResponse($this->generateUrl('app_register', ['email' => $email, 'githubId' => $token]));
+            return new RedirectResponse($this->generateUrl('app_register', ['email' => $email, 'clientKey' => $clientKey, 'token' => $token]));
 
         }
 
@@ -240,7 +254,11 @@ class OAuthController extends AbstractController
             dd($e,  $e->getMessage());
         }
 
-        return new RedirectResponse($this->generateUrl('app_register', ['email' => $email, 'githubId = ']));
+        return new RedirectResponse($this->generateUrl('app_register', [
+            'email' => $email,
+            'clientKey' => $clientKey,
+            'token' => $token
+        ]));
     }
 
 

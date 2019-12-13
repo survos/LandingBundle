@@ -51,10 +51,11 @@
                                 </div>
                             </div>
 
+                            {% set authToken = csrf_token('authenticate') %}
                             <input type="hidden" name="_csrf_token"
-                                   value="{{ csrf_token('authenticate') }}"
+                                   value="{{ authToken }}"
                             >
-
+                            {{ not authToken ? 'WARNING: no auth token!' }}
 
                             <div class="form-group">
                                 <div class="custom-checkbox custom-control">

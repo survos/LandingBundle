@@ -106,10 +106,12 @@
     <h3>Install the provider library</h3>
 
     {% if package %}
-    <i class="fas fa-checked"></i>Installed.
+        <i class="far fa-check-square text-success"></i>
+        Installed.
     {% endif %}
-    <input type="text" value="composer req {{ provider.library }}" />
 
+    Need copy.js
+    <input type="text" class="input-md" value="composer req {{ provider.library }}" />
 
     <h3>Setup your environment (.env)</h3>
     <textarea cols="80" rows="2">{% for var in provider.env_vars %}{{ var }}=~

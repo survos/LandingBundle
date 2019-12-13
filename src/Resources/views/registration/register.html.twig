@@ -53,8 +53,13 @@
 
                             {{ form_end(registrationForm) }}
 
+
                             <div class="mt-4 text-center">
+                                {% if clientKey %}
+                                Registering with {{ clientKey|title }}
+                                {% else %}
                                 {{ render(controller('Survos\\LandingBundle\\Controller\\OAuthController::socialMediaButtons', { style: 'login' } )) }}
+                                {% endif %}
                             </div>
 
 
