@@ -197,13 +197,21 @@ class OAuthController extends AbstractController
 
         // the exact class depends on which provider you're using
         /** @var \League\OAuth2\Client\Provider\GithubResourceOwner $user */
-        $user = $client->fetchUser();
+        try {
+            $user = $client->fetchUser();
 
-        // github users don't have an email, so we have to fetch it.
-        $email = $user->getEmail();
+            // github users don't have an email, so we have to fetch it.
+            $email = $user->getEmail();
 
-        // now presumably we need to link this up.
-        $token = $user->getId();
+            // now presumably we need to link this up.
+            $token = $user->getId();
+        } catch (\Exception $e) {
+            $this->addFlash('error', $e->getMessage());
+            foreach ($request->query->all() as $var=>$value) {
+                $this->addFlash('warning', sprintf("%s: %s", $var, $value));
+            }
+            return $this->redirectToRoute('app_login');
+        }
 
         // do something with all this new power!
         // e.g. $name = $user->getFirstName();

@@ -17,7 +17,7 @@
                 </td>
                 <td>
                     {% for clientKey, client in providerData.clients %}
-                    {% set callback = url('oauth_connect_check', {clientKey: clientKey})   %}
+                    {% set callback = url('oauth_connect_check', {clientKey: clientKey}, true)   %}
                     <input value="{{ callback}}" /><a href="{{ callback }}" target="_blank"><i class="fas fa-external-link"></i></a> </td>
                     {% endfor %}
                 {% set config = providerData %}
