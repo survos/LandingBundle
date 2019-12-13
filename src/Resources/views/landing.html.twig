@@ -108,7 +108,9 @@
             <div class="col-lg-4">
                 <h1>{{ 'home.title'|trans }}</h1>
                 <p>{{ 'home.description'|trans|raw }}</p>
+                {% if 'home.call-to-action'|trans != 'home.call-to-action' %}
                 <a class="btn btn-primary btn-lg" href="#">{{ 'home.call-to-action'|trans }} </a>
+                {% endif %}
             </div>
 
             <!-- /.col-md-4 -->

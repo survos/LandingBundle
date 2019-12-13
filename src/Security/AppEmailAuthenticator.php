@@ -90,14 +90,24 @@ class AppEmailAuthenticator extends AbstractFormLoginAuthenticator implements Pa
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey)
     {
+        $route = $request->get('_route');
 
         // hack!
-        if (!in_array($request->get('_route'), ['connect_github_check_with_controller']))
+        if (!in_array($route, ['connect_github_check_with_controller']))
         {
             if ($targetPath = $this->getTargetPath($request->getSession(), $providerKey)) {
                 return new RedirectResponse($targetPath);
             }
         }
+
+        if ($redirect = $request->getSession()->get('_security.target_path')) {
+            //
+            // dd($route, $redirect, $request->getSession()->all());
+        } else {
+
+        }
+
+
 
         return new RedirectResponse($this->urlGenerator->generate('app_homepage'));
     }

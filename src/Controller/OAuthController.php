@@ -194,17 +194,16 @@ class OAuthController extends AbstractController
         /** @var \KnpU\OAuth2ClientBundle\Client\Provider\GithubClient $client */
 
         $client = $clientRegistry->getClient($clientKey);
+        $route = $request->get('_route');
 
         // the exact class depends on which provider you're using
         /** @var \League\OAuth2\Client\Provider\GithubResourceOwner $user */
         try {
-            $user = $client->fetchUser();
-
+            $oAuthUser = $client->fetchUser();
             // github users don't have an email, so we have to fetch it.
-            $email = $user->getEmail();
-
+            $email = $oAuthUser->getEmail();
             // now presumably we need to link this up.
-            $token = $user->getId();
+            $token = $oAuthUser->getId();
         } catch (\Exception $e) {
             $this->addFlash('error', $e->getMessage());
             foreach ($request->query->all() as $var=>$value) {
@@ -221,6 +220,7 @@ class OAuthController extends AbstractController
 
         // it seems that loadUserByUsername redirects to logig
         // if ($user = $userProvider->loadUserByUsername($email)) {
+        /** @var User $user */
         if ($user = $em->getRepository(User::class)->findOneBy(['email' => $email])) {
 // after validating the user and saving them to the database
             // authenticate the user and use onAuthenticationSuccess on the authenticator
@@ -233,12 +233,16 @@ class OAuthController extends AbstractController
                     default: throw new \Exception("Invalid client key: " . $clientKey);
                 }
 
-                return $guardHandler->authenticateUserAndHandleSuccess(
+
+                $successRedirect =  $guardHandler->authenticateUserAndHandleSuccess(
                     $user,          // the User object you just created
                     $request,
                     $authentication, // authenticator whose onAuthenticationSuccess you want to use
                     'main'          // the name of your firewall in security.yaml
                 );
+                // dump($clientKey, $user, $user->getRoles(), $guardHandler, get_class($guardHandler), $successRedirect);
+
+                return $successRedirect;
             } else {
                 return new RedirectResponse($this->generateUrl('app_register', ['email' => $email, 'githubId = ']));
             }

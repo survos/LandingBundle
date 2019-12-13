@@ -53,7 +53,7 @@ The bundle assumes you've created your project from the base website skeleton
     
     composer config repositories.captcha '{"type": "vcs", "url": "git@github.com:cyrilverloop/symfony-captcha-bundle.git"}'
 
-    composer config repositories.survoslanding '{"type": "vcs", "url": "https://github.com/survos/LandingBundle.git"}'
+    composer config repositories.git-survoslanding '{"type": "vcs", "url": "https://github.com/survos/LandingBundle.git"}'
 
     composer config repositories.flowdemo '{"type": "path", "url": "../Survos/../CraueFormFlowDemoBundle"}'
 
