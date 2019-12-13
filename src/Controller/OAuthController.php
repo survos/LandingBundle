@@ -216,12 +216,13 @@ class OAuthController extends AbstractController
         if ($user = $em->getRepository(User::class)->findOneBy(['email' => $email])) {
 // after validating the user and saving them to the database
             // authenticate the user and use onAuthenticationSuccess on the authenticator
-            dump($user, $token, $email, $clientKey);
             // if it's already in there, update the token.  This also happens with registration, so maybe belongs in LandingService?
             if ($user->getId()) {
                 switch ($clientKey) {
                     case 'github': $user->setGithubId($token); break;
-                    default: throw new \Exception("Invalid client key " . $clientKey);
+                    case 'facebook': $user->setFacebookId($token); break;
+                    case 'google': $user->setGoogleId($token); break;
+                    default: throw new \Exception("Invalid client key: " . $clientKey);
                 }
 
                 return $guardHandler->authenticateUserAndHandleSuccess(
