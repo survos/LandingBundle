@@ -21,6 +21,7 @@ use Symfony\Component\Security\Core\Authentication\AuthenticationManagerInterfac
 use Symfony\Component\Security\Core\Authentication\Provider\AuthenticationProviderInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Guard\Authenticator\AbstractFormLoginAuthenticator;
+use Symfony\Component\Security\Guard\AuthenticatorInterface;
 use Symfony\Component\Security\Guard\GuardAuthenticatorHandler;
 use Symfony\Component\Security\Guard\PasswordAuthenticatedInterface;
 use Twig\Environment;
@@ -146,7 +147,7 @@ class OAuthController extends AbstractController
      * because this is the "redirect_route" you configured
      * in config/packages/knpu_oauth2_client.yaml
      *
-     * @Route("/connect/check-guard", name="connect_github_check_with_guard")
+     * @Route("/connect/check-guard", name="connect_check_with_guard")
      */
     public function connectCheckAction(Request $request, UserProviderInterface $userProvider)
     {

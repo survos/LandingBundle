@@ -93,14 +93,15 @@ class AppEmailAuthenticator extends AbstractFormLoginAuthenticator implements Pa
         $route = $request->get('_route');
 
         // hack!
-        if (!in_array($route, ['connect_github_check_with_controller']))
+        if (!in_array($route, ['oauth_connect_check']))
         {
             if ($targetPath = $this->getTargetPath($request->getSession(), $providerKey)) {
                 return new RedirectResponse($targetPath);
             }
         }
 
-        if ($redirect = $request->getSession()->get('_security.target_path')) {
+        if ($targetPath = $request->getSession()->get('_security.target_path')) {
+            return new RedirectResponse($targetPath);
             //
             // dd($route, $redirect, $request->getSession()->all());
         } else {

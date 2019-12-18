@@ -137,6 +137,8 @@ When finished, the application will have a basic landing page with top navigatio
 
 ### Deploy to heroku
 
+    heroku create $projectName
+    
     composer config --unset repositories.survoslanding && composer update
     git commit -m "unset survoslanding" . && git push heroku master
 

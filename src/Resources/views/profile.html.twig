@@ -1,31 +1,44 @@
 {% extends ['base.html.twig', "SurvosLandingBundle::base.html.twig"] %}
 
+{% block title 'User Profile' %}
 {% block body %}
 
+    {% if app.environment == 'dev' %}
     <p>
         For inspiration, see <a href="https://symfonycasts.com/profile/show">https://symfonycasts.com/profile/show</a>
     </p>
+    {% endif %}
+
+    <ul>
+        {% for member in user.memberships %}
+            <li>{{ member.project.name }}
+                <ul>
+                    {% for code, tc in member.tagCategorySubscriptionsByCode() %}
+                        <li>{{ tc.tagCategory }}:
+                            {{ tc.customTags.count }}
+                            {% for tag in tc.customTags %}
+                            {{ tag.name }}
+                            {% endfor %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </li>
+
+        {% endfor %}
+    </ul>
 
     {{ block('connect_with_social_media') }}
 
-    <pre>
-    User: {{ user.email }}
-    ID: {{ user.id }}
-        {# could be user.social('google') ??
-     Google: {{ user.googleId }}
-    #}
-
-    Password: {{ user.password }}
-
-    </pre>
-
+    <hr />
     <a href="{{ path('app_change_password') }}">Change Password</a>
 
-    {% if change_password_form %}
+    {% if change_password_form|default(false) %}
     {{ form(change_password_form) }}
     {% endif %}
 
+    {# argh, should we include user management in the bundle?
     {% include "user/_delete_form.html.twig" %}
+    #}
 
 
 {% endblock %}
