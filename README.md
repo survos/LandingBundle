@@ -1,5 +1,26 @@
 # landing-bundle
 
+@todo:
+
+Add new Bundle directory convention consistent with standard skeletons:
+
+    └── MyBundle/
+        ├── config/
+        ├── public/
+        ├── src/
+        │   └── MyBundle.php
+        ├── templates/
+        └── translations/
+    
+        class MyBundle extends Bundle
+        {
+            public function getPath(): string
+            {
+                return \dirname(__DIR__);
+            }
+        }
+
+
 A moderately-opinionated bundle that provides a quick way to get up and running with Symfony, using best practices.  
 
 Besides the Symfony web skeleton, this bundle also requires:

@@ -10,4 +10,9 @@ class SurvosLandingBundle extends Bundle
     {
         $container->addCompilerPass(new SurvosLandingCompilerPass());
     }
+
+    public function getPath(): string
+    {
+        return \dirname(__DIR__);
+    }
 }

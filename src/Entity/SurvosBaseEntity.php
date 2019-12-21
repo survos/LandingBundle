@@ -11,4 +11,9 @@ abstract class SurvosBaseEntity
         return array_merge($this->getUniqueIdentifiers(), $addlParams);
     }
 
+    public function __toString()
+    {
+        return join('-', array_values($this->getUniqueIdentifiers()));
+    }
+
 }
