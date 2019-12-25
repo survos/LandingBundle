@@ -78,7 +78,7 @@ class LandingService
     // the hand-curated list of URLs.  Written by hand
     protected static function getOAuthProviderUrlPath(): string
     {
-        return __DIR__ . '/../Resources/data/oauth_provider_urls.yaml';
+        return __DIR__ . '/Resources/data/oauth_provider_urls.yaml';
     }
 
     // the data from KNPU's list of providers plus the urls to link to for configurating.
@@ -87,7 +87,7 @@ class LandingService
     // when read by LandingService->authProviderConfigurationData.  Does include project-specific data (needs ClientRegistry)
     protected static function getOAuthProviderCombinedPath(): string
     {
-        return __DIR__ . '/../Resources/data/oauth_provider.yaml';
+        return __DIR__ . '/Resources/data/oauth_provider.yaml';
     }
 
     public function writeCombinedOauthData($data)

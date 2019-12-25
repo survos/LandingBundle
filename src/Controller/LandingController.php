@@ -142,6 +142,7 @@ class LandingController extends AbstractController
     {
         // bad practice to inject the kernel.  Maybe read composer.json and composer.lock
         $json = file_get_contents('../composer.json');
+        $lock = file_get_contents('../composer.lock');
 
         return $this->render("@SurvosLanding/credits.html.twig", [
             'composerData' => json_decode($json, true),

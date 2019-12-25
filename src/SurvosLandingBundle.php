@@ -11,8 +11,8 @@ class SurvosLandingBundle extends Bundle
         $container->addCompilerPass(new SurvosLandingCompilerPass());
     }
 
-    public function getPath(): string
+    public function XXgetPath(): string
     {
-        return \dirname(__DIR__);
+        return \dirname(__DIR__); // use the newer bundle structure, /templates instead of /Resources/views
     }
 }

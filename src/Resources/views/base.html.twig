@@ -18,7 +18,9 @@
     {% endblock %}
 </head>
 
-<body>
+{% block bodyOpen %}
+    <body><!-- LandingBundle base.html.twig-->
+{% endblock %}
 
 {% block navigation %}
 {% include "@SurvosLanding/navbar.html.twig" %}
@@ -31,6 +33,7 @@
             {{ message|join('<br />') }}
         </div>
     {% endfor %}
+    <div id="message"></div>
 {% endblock %}
 
 {% if is_granted('ROLE_PREVIOUS_ADMIN') %}

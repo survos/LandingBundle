@@ -13,7 +13,7 @@
         {% for member in user.memberships %}
             <li>{{ member.project.name }}
                 <ul>
-                    {% for code, tc in member.tagCategorySubscriptionsByCode() %}
+                    {% for code, tc in member.tagCategorySubscriptions %}
                         <li>{{ tc.tagCategory }}:
                             {{ tc.customTags.count }}
                             {% for tag in tc.customTags %}
@@ -21,11 +21,17 @@
                             {% endfor %}
                         </li>
                     {% endfor %}
+                    <li>
+                        <a href="{{ path('member_reset', member.rp) }}" class="btn btn-danger">Reset {{member.project}} Subscriptions</a>
+
+                    </li>
+
                 </ul>
             </li>
 
         {% endfor %}
     </ul>
+
 
     {{ block('connect_with_social_media') }}
 
