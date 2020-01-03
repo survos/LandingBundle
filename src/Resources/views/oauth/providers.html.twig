@@ -35,14 +35,14 @@
 
         {#
     {% for key, clientInfo in clients %}
-    {% set p = clientInfo.provider %}
+    {% set project = clientInfo.provider %}
         {% set client = clientInfo.client %}
         <li>{{ key }}:
 
         <a href="{{ path('oauth_connect_check', {clientKey: key}) }}">redirect</a>
 
         {{ dump(client) }}
-        {{ dump(p) }}
+        {{ dump(project) }}
     </li>
         {% endfor %}
     </ul>

@@ -26,11 +26,14 @@
                             <h2 class="card-title">
                                 {{ block('label') }}
                             </h2>
-                            <p class="card-text">{{ "%s.description"|format(item.name)|trans }}</p>
+                            <p class="card-text">{{ item.extras.description|default("%s.description"|format(item.name)|trans) }}</p>
+                            {% for i in item.children %}
+                                <a href="{{ i.uri }}" class="btn btn-primary">{{ i.label }}</a>
+
+                            {% endfor %}
                         </div>
                         <div class="card-footer">
                             {{ block('linkElement') }}
-
                             <a href="{{ item.uri }}" class="btn btn-primary">Go</a>
                         </div>
                     </div>

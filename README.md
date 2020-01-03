@@ -49,6 +49,8 @@ This bundle was created originally to isolate issues with other bundles and to g
 
 The bundle assumes you've created your project from the base website skeleton
 
+    DIR=survos-utilities && mkdir $DIR && cd $DIR && symfony new --full . 
+    
     DIR=symfony5-bundle-test && mkdir $DIR && cd $DIR && symfony new --full . 
 
     # composer config extra.symfony.allow-contrib true
