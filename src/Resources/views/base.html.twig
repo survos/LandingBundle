@@ -19,7 +19,7 @@
 </head>
 
 {% block bodyOpen %}
-    <body><!-- LandingBundle base.html.twig-->
+    <body><!-- {{ _self }} -->
 {% endblock %}
 
 {% block navigation %}
@@ -43,7 +43,7 @@
 <!-- Page Content -->
 <div class="container-fluid">
 {% block body %}
-    Content goes here, must have a <code>body</code> block.
+    {{ _self }} Content goes here, must have a <code>body</code> block.
 {% endblock %}
 </div>
 
