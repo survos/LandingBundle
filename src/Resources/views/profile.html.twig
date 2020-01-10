@@ -9,6 +9,7 @@
     </p>
     {% endif %}
 
+    {# ack, what is this doing here?  This is for headlineHub, NOT SurvosLandingBundle!!
     <ul>
         {% for member in user.memberships %}
             <li>{{ member.project.name }}
@@ -31,6 +32,7 @@
 
         {% endfor %}
     </ul>
+    #}
 
 
     {{ block('connect_with_social_media') }}
