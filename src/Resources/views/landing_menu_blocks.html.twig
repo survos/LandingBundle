@@ -24,7 +24,7 @@
                     <div class="card h-100">
                         <div class="card-body">
                             <h2 class="card-title">
-                                {{ block('label') }}
+                                {{ item.extras.title|default(item.label|replace({'app_': '', 'survos_': '', '_': ' '})|title) }}
                             </h2>
                             <p class="card-text">{{ item.extras.description|default("%s.description"|format(item.name)|trans) }}</p>
                             {% for i in item.children %}
