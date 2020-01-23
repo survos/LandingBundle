@@ -101,6 +101,7 @@
             <div class="col-lg-8">
                 {#
                 <img src="{{ asset('logo.png')}}" width="300" alt="{{ 'home.title'|trans }} Logo"/>
+                @todo: use SVG!
                 #}
                 <img class="img-fluid rounded" src="//placehold.it/600x200?text={{ 'home.title'|trans }}" alt="">
             </div>
@@ -124,7 +125,9 @@
             </div>
         </div>
 
-        {{ knp_menu_render('landing_menu', {currentClass: 'active', template: '@SurvosLanding/landing_menu_blocks.html.twig'}) }}
+        {{  landlord_code }}
+        {# no try/catch, so this is now REQUIRED!  Might be better to set this as an option in survos_landing.yaml #}
+        {{ knp_menu_render('landing_content_menu', {currentClass: 'active', template: '@SurvosLanding/landing_menu_blocks.html.twig'}) }}
 
     </div>
     <!-- /.container -->

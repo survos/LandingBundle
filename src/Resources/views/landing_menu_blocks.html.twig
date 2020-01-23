@@ -27,10 +27,18 @@
                                 {{ item.extras.title|default(item.label|replace({'app_': '', 'survos_': '', '_': ' '})|title) }}
                             </h2>
                             <p class="card-text">{{ item.extras.description|default("%s.description"|format(item.name)|trans) }}</p>
-                            {% for i in item.children %}
-                                <a href="{{ i.uri }}" class="btn btn-primary">{{ i.label }}</a>
-
-                            {% endfor %}
+                            <ul>
+                                {% for i in item.children %}
+                                    <li>
+                                        <a href="{{ i.uri }}" class="">
+                                            {% if i.attributes.icon|default(false) %}
+                                                <span class="{{ i.attributes.icon }}"></span>
+                                            {% endif %}
+                                            {{ i.label|trans }}
+                                        </a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
                         </div>
                         <div class="card-footer">
                             {{ block('linkElement') }}

@@ -53,6 +53,50 @@ class LandingMenuBuilder
         return $this->cleanupMenu($menu);
     }
 
+    public function menuOptions(array $options, array $extra = []): array
+    {
+        // idea: make the label a . version of the route, e.g. project_show could be project.show
+        // we could also set a default icon for things like edit, show
+        $options = (new OptionsResolver())
+            ->setDefaults([
+                'route' => null,
+                'rp' => [],
+                'label' => null,
+                'icon' => null,
+                'attributes' => []
+            ])->resolve($options);
+
+        // rename rp
+        $options['routeParameters'] = $options['rp'];
+        unset($options['rp']);
+
+        // if label is FALSE then no label, if null then set dot default
+        if ($options['label'] === null) {
+            $options['label'] = str_replace('_', '.', $options['route']);
+        }
+
+        // default icon, should be configurable in survos_landing.yaml
+        if ($options['icon'] === null) {
+            foreach ([
+                         'show' => 'fas fa-eye',
+                         'edit' => 'fas fa-wrench'
+                     ] as $regex=>$icon) {
+                if (preg_match("|$regex|", $options['route'])) {
+                    $options['icon'] = $icon;
+                }
+            }
+
+        }
+
+        // move the icon to attributes, where it belongs
+        if ($options['icon']) {
+            $options['attributes']['icon'] = $options['icon'];
+            unset($options['icon']);
+        }
+        return $options;
+
+    }
+
     public function setEntityManager(EntityManagerInterface $entityManager) {
         $this->em = $entityManager;
     }
