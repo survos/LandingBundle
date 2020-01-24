@@ -129,8 +129,8 @@ class LandingMenuBuilder
 
     }
 
-    public function isGranted($attribute) {
-        return $this->authorizationChecker->isGranted($attribute);
+    public function isGranted($attribute, $subject=null) {
+        return $this->authorizationChecker->isGranted($attribute, $subject);
     }
 
     public function createAuthMenu(array $options = []): ItemInterface
