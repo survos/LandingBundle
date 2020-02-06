@@ -61,6 +61,7 @@ class LandingMenuBuilder
             ->setDefaults([
                 'route' => null,
                 'rp' => [],
+                '_fragment' => null,
                 'label' => null,
                 'icon' => null,
                 'attributes' => []
@@ -73,6 +74,13 @@ class LandingMenuBuilder
         // if label is FALSE then no label, if null then set dot default
         if ($options['label'] === null) {
             $options['label'] = str_replace('_', '.', $options['route']);
+        }
+
+        // we could pass in a hash route and hash params instead.
+        if ($fragment = $options['_fragment']) {
+            $options['uri'] = '#' . $fragment;
+            unset($options['route']);
+            //
         }
 
         // default icon, should be configurable in survos_landing.yaml
