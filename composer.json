@@ -1,8 +1,8 @@
 {
     "name": "survos/landing-bundle",
-    "description": "Add some tools and resources to a Symfony4.4/Symfony5 application",
+    "description": "Add some tools and resources to a Symfony5 application",
     "type": "symfony-bundle",
-    "keywords": ["generator", "skeleton" ,"symfony4", "symfony5"],
+    "keywords": ["generator", "skeleton" , "symfony5"],
     "require": {
         "ext-json": "*",
         "ext-zip": "*",
@@ -12,8 +12,10 @@
         "meyfa/php-svg": "^0.9.1",
         "symfony/mailer": "*",
         "symfony/orm-pack": "*",
+        "symfony/string": "^5.0",
         "symfony/webpack-encore-bundle": "^1.6|^2",
         "symfony/yaml": "*",
+        "twig/string-extra": "^3.0",
         "twig/twig": "^2.5|^3.0"
     },
     "require-dev": {
