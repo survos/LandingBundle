@@ -45,13 +45,20 @@ This bundle was created originally to isolate issues with other bundles and to g
 * yarn
 * Symfony CLI (for running a local server, creating project, etc.)
 
+### Create github Project
+
+Create a repository with no .gitignore and a README.me  clone it
+
 ### Using the bundle
 
 The bundle assumes you've created your project from the base website skeleton
 
-    DIR=survos-utilities && mkdir $DIR && cd $DIR && symfony new --full . 
     
-    DIR=symfony5-bundle-test && mkdir $DIR && cd $DIR && symfony new --full . 
+
+    DIR=jstree-demo && mkdir $DIR && cd $DIR && symfony new --full . --no-git
+    
+    
+    DIR=ffmpeg-test && mkdir $DIR && cd $DIR && symfony new --full . 
 
     # composer config extra.symfony.allow-contrib true
 
@@ -161,6 +168,11 @@ When finished, the application will have a basic landing page with top navigatio
 ### Deploy to heroku
 
     heroku create $projectName
+    
+    echo "web:  vendor/bin/heroku-php-nginx -C heroku-nginx.conf  -F fpm_custom.conf public/" > Procfile
+
+    heroku buildpacks:add --index 2 heroku/nodejs
+
     
     composer config --unset repositories.survoslanding && composer update
     git commit -m "unset survoslanding" . && git push heroku master

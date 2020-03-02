@@ -64,6 +64,7 @@ class LandingMenuBuilder
                 '_fragment' => null,
                 'label' => null,
                 'icon' => null,
+                'description' => null,
                 'attributes' => []
             ])->resolve($options);
 
@@ -71,8 +72,9 @@ class LandingMenuBuilder
         $options['routeParameters'] = $options['rp'];
         unset($options['rp']);
 
-        // if label is FALSE then no label, if null then set dot default
-        if ($options['label'] === null) {
+        // if label is exactly true then automate the label from the route
+
+        if ($options['label'] === true) {
             $options['label'] = str_replace('_', '.', $options['route']);
         }
 
@@ -93,7 +95,6 @@ class LandingMenuBuilder
                     $options['icon'] = $icon;
                 }
             }
-
         }
 
         // move the icon to attributes, where it belongs
