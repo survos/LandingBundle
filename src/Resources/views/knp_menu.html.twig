@@ -23,9 +23,9 @@
     {% if item.displayed %}
         {%- set attributes = item.attributes %}
         {%- set is_dropdown = attributes.dropdown|default(false) %}
+        {%- set is_collapsable = attributes.collapsable|default(false) %}
         {%- set divider_prepend = attributes.divider_prepend|default(false) %}
         {%- set divider_append = attributes.divider_append|default(false) %}
-
         {# unset bootstrap specific attributes #}
         {%- set attributes = attributes|merge({'dropdown': null, 'divider_prepend': null, 'divider_append': null }) %}
 
@@ -51,10 +51,14 @@
         {%- set childrenClasses = item.childrenAttribute('class') is not empty ? [item.childrenAttribute('class')] : [] %}
         {%- set childrenClasses = childrenClasses|merge(['menu_level_' ~ item.level]) %}
 
-        {# adding classes for dropdown #}
+        {# adding classes for dropdown/collapse #}
         {%- if is_dropdown %}
             {%- set classes = classes|merge(['dropdown']) %}
             {%- set childrenClasses = childrenClasses|merge(['dropdown-item']) %}
+        {%- endif %}
+        {%- if is_collapsable %}
+            {%- set classes = classes|merge(['collapse', 'show']) %}
+            {%- set childrenClasses = childrenClasses|merge(['collapse-item']) %}
         {%- endif %}
 
         {# putting classes together #}
@@ -62,21 +66,30 @@
             {%- set attributes = attributes|merge({'class': classes|join(' ')}) %}
         {%- endif %}
         {%- set listAttributes = item.childrenAttributes|merge({'class': childrenClasses|join(' ') }) %}
+        {%- set itemSlug = item.name|u.snake %}
 
         <li{{ macros.attributes(attributes) }}>
             {# displaying the item #}
             {%- if is_dropdown %}
                 {{ block('dropdownElement') }}
+            {%- elseif is_collapsable %}
+                {{ block('collapseElement') }}
             {%- elseif item.uri is not empty and (not item.current or options.currentAsLink) %}
                 {{ block('linkElement') }}
             {%- else %}
                 {{ block('spanElement') }}
             {%- endif %}
+
             {%- if divider_append %}
                 {{ block('dividerElement') }}
             {%- endif %}
+
             {% if item.hasChildren and options.depth is not same as(0) and item.displayChildren %}
-                {{ block('dropdownlinks') }}
+                {%- if is_dropdown %}
+                    {{ block('dropdownlinks') }}
+                {% elseif is_collapsable %}
+                    {{ block('collapselinks') }}
+                {% endif %}
             {% endif %}
         </li>
     {% endif %}
@@ -88,9 +101,9 @@
     {% else %}
         <div class="dropdown-menu">
     {% endif %}
+
     {% for item in item.children %}
         {{ block('renderDropdownlink') }}
-
         {% if use_multilevel and item.hasChildren and options.depth is not same as(0) and item.displayChildren %}
             {{ block('dropdownlinks') }}
         {% endif %}
@@ -100,6 +113,15 @@
     {% else %}
         </ul>
     {% endif %}
+{% endblock %}
+
+{% block collapselinks %}
+    {# the collapseELement block references this id, we might need data-parent #}
+    <div id="collapse_{{itemSlug}}" class="collapse">
+    {% for item in item.children %}
+        {{ block('renderDropdownlink') }}
+    {% endfor %}
+    </div>
 {% endblock %}
 
 {% block renderDropdownlink %}
@@ -186,9 +208,27 @@
     {%- set classes = item.linkAttribute('class') is not empty ? [item.linkAttribute('class')] : [] %}
     {%- set classes = classes|merge(['dropdown-toggle', 'nav-link']) %}
     {%- set attributes = item.linkAttributes %}
-    {%- set attributes = attributes|merge({'class': classes|join(' ')}) %}
+    {%- set XXXattributes = attributes|merge({'class': classes|join(' ')}) %}
     {%- set attributes = attributes|merge({'data-toggle': 'dropdown'}) %}
     <a href="#"{{ macros.attributes(attributes) }}>
+        {% if item.attribute('icon') is not empty  %}
+            <i class="{{ item.attribute('icon') }}"></i>
+        {% endif %}
+        {{ block('label') }}
+        <b class="caret"></b>
+    </a>
+{% endblock %}
+
+{# this is the root element of something that can be collapsed #}
+{% block collapseElement %}
+    {% import "knp_menu.html.twig" as macros %}
+    {%- set classes = item.linkAttribute('class') is not empty ? [item.linkAttribute('class')] : [] %}
+
+    {%- set classes = classes|merge(['xxshow', 'nav-link']) %}
+    {%- set attributes = item.linkAttributes %}
+    {%- set attributes = attributes|merge({'class': classes|join(' ')}) %}
+    {%- set attributes = attributes|merge({'data-toggle': 'collapse'}) %}
+    <a href="#collapse_{{itemSlug}}" {{ macros.attributes(attributes) }}>
         {% if item.attribute('icon') is not empty  %}
             <i class="{{ item.attribute('icon') }}"></i>
         {% endif %}
