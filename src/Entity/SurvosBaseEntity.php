@@ -16,4 +16,16 @@ abstract class SurvosBaseEntity
         return join('-', array_values($this->getUniqueIdentifiers()));
     }
 
+    public function populateFromOptions(array $options ): array
+    {
+        foreach ($options as $var=>$val) {
+            // isn't there a property accessor method?
+            if (substr($var, 0, 1) <> '_') {
+                $this->{'set' . $var}($val);
+            }
+        }
+        unset($options['_token']);
+        return $options;
+    }
+
 }
