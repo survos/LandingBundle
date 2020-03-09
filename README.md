@@ -53,9 +53,10 @@ Create a repository with no .gitignore and a README.me  clone it
 
 The bundle assumes you've created your project from the base website skeleton
 
-    
-
     DIR=jstree-demo && mkdir $DIR && cd $DIR && symfony new --full . --no-git
+
+    git remote add origin git@github.com:survos/flow-demo.git
+    git push -u origin master
     
     
     DIR=ffmpeg-test && mkdir $DIR && cd $DIR && symfony new --full . 
@@ -171,6 +172,7 @@ When finished, the application will have a basic landing page with top navigatio
     
     echo "web:  vendor/bin/heroku-php-nginx -C heroku-nginx.conf  -F fpm_custom.conf public/" > Procfile
 
+    heroku buildpacks:add heroku/nodejs
     heroku buildpacks:add --index 2 heroku/nodejs
 
     

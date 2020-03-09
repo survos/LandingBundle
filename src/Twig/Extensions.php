@@ -69,6 +69,7 @@ class Extensions extends AbstractExtension
             new TwigFunction('h', [$this, 'rstHeader']),
             new TwigFunction('optionsResolver', [$this, 'optionsResolver']),
             new TwigFunction('tourOptions', [$this, 'tourOptions']),
+            new TwigFunction('adminLinks', [$this, 'adminLinks']),
         ];
     }
 
@@ -99,6 +100,8 @@ class Extensions extends AbstractExtension
     {
         return sprintf("<a target='_blank' href='%s'>%s <i class='fas fa-external-link'></i> </a>", $url, $url);
     }
+
+
 
     /**
      * @param string $currency
@@ -158,6 +161,16 @@ class Extensions extends AbstractExtension
         return $resolver->setDefaults($defaults)
             ->setRequired($required)
             ->resolve($options);
+    }
+
+    public function adminLinks($object, $root = null)
+    {
+        if (!$root) {
+            $root = u( (new \ReflectionClass($object))->getShortName())->lower();
+        }
+
+
+
     }
 
     public function tourOptions($id, $options, $required = [])

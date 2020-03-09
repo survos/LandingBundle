@@ -60,7 +60,7 @@ class LandingMenuBuilder
         $options = (new OptionsResolver())
             ->setDefaults([
                 'route' => null,
-                'rp' => [],
+                'rp' => null,
                 '_fragment' => null,
                 'label' => null,
                 'icon' => null,
@@ -69,7 +69,12 @@ class LandingMenuBuilder
             ])->resolve($options);
 
         // rename rp
-        $options['routeParameters'] = $options['rp'];
+        if (is_object($options['rp'])) {
+            $options['routeParameters'] = $options['rp']->getRp();
+            $options['icon'] = constant(get_class($options['rp']) . '::ICON');
+        } elseif (is_array($options['rp'])) {
+            $options['routeParameters'] = $options['rp'];
+        }
         unset($options['rp']);
 
         // if label is exactly true then automate the label from the route

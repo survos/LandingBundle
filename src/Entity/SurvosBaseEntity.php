@@ -18,14 +18,32 @@ abstract class SurvosBaseEntity
 
     public function populateFromOptions(array $options ): array
     {
+        unset($options['_token']);
+        unset($options['_next_route']);
         foreach ($options as $var=>$val) {
             // isn't there a property accessor method?
-            if (substr($var, 0, 1) <> '_') {
-                $this->{'set' . $var}($val);
-            }
+            $this->{'set' . $var}($val);
         }
-        unset($options['_token']);
         return $options;
+    }
+
+    public function getRoutePrefix()
+    {
+        // this or self?
+        $shortName = strtolower( (new \ReflectionClass($this))->getShortName() );
+        return $shortName . '_';
+    }
+
+    public function getNextRouteChoices(): array
+    {
+        $routes = [];
+        foreach (['edit', 'show', 'index'] as $routeType ) {
+            // @todo: security
+            $routes[$this->getRoutePrefix() . $routeType] = $this->getRoutePrefix() . $routeType; // @todo add translation
+        }
+        return $routes;
+        // by default, list and show
+
     }
 
 }

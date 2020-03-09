@@ -8,10 +8,21 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Twig\Environment;
 
 class SurvosSetupHerokuCommand extends Command
 {
     protected static $defaultName = 'survos:setup-heroku';
+    /**
+     * @var Environment
+     */
+    private $twig;
+
+    public function __XXXXconstruct(Environment $twig, string $name = null)
+    {
+        parent::__construct($name);
+        $this->twig = $twig;
+    }
 
     protected function configure()
     {
@@ -26,6 +37,9 @@ class SurvosSetupHerokuCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
         $arg1 = $input->getArgument('arg1');
+
+        $procfile = $this->twig->render("@SurvosLanding/Procfile.twig", []);
+
 
         // heroku init
 

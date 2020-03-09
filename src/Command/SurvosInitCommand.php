@@ -56,7 +56,7 @@ class SurvosInitCommand extends Command
     {
 
         $this
-            ->setDescription('Basic environment: landing page, yarn install, sqlite in .env.local, ')
+            ->setDescription('Basic environment: landing page, heroku, yarn install, sqlite in .env.local, ')
             ->addArgument('arg1', InputArgument::OPTIONAL, 'Argument description')
             ->addOption('option1', null, InputOption::VALUE_NONE, 'Option description')
         ;
@@ -77,6 +77,8 @@ class SurvosInitCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->io = $io = new SymfonyStyle($input, $output);
+
+        $this->checkHeroku($io);
 
         $this->createFavicon($io);
 
@@ -184,6 +186,40 @@ class SurvosInitCommand extends Command
             $io->warning("Installing base yarn libraries");
             echo exec('yarn install');
         }
+    }
+
+    private function checkHeroku(SymfonyStyle $io)
+    {
+
+        // @todo: check buildpacks
+        echo exec("heroku buildpacks:add heroku/php");
+        echo exec("heroku buildpacks:add heroku/nodejs");
+
+        if (!file_exists($this->projectDir . ($fn = '/Procfile'))) {
+           //  $io->warning("Installing base yarn libraries");
+            $procfile = $this->twig->render("@SurvosLanding/heroku/Procfile.twig", []);
+            $this->writeFile($fn, $procfile);
+        }
+        if (!file_exists($this->projectDir . ($fn = '/fpm_custom.conf'))) {
+            //  $io->warning("Installing base yarn libraries");
+            $procfile = $this->twig->render("@SurvosLanding/heroku/fpm_custom.conf.twig", []);
+            $this->writeFile($fn, $procfile);
+        }
+
+        if (!file_exists($this->projectDir . ($fn = '/heroku-nginx.conf'))) {
+            //  $io->warning("Installing base yarn libraries");
+            $procfile = $this->twig->render("@SurvosLanding/heroku/heroku-nginx.conf.twig", []);
+            $this->writeFile($fn, $procfile);
+        }
+
+        // fix monolog key
+        $monologFile = $this->projectDir . ($fn = '/config/packages/prod/monolog.yaml');
+        $data = Yaml::parse(file_get_contents($monologFile));
+        $data['monolog']['handlers']['nested']['path'] = "php://stderr";
+        $newData = Yaml::dump($data, 4);
+        $this->writeFile($fn, $newData);
+
+
     }
 
     private function setupDatabase(SymfonyStyle $io) {
