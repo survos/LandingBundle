@@ -114,7 +114,8 @@
         'bodyClass': '',
         'id': null,
         'content': null,
-        'collapsable': true
+        'collapsable': true,
+        'collapsed': false
     }, options|default({})) %}
 
     {% set id = options.id %}
@@ -233,6 +234,7 @@
                         {% endif %}
                         #}
 
+
                 {% if options.collapsable %}
                     <button id="{{ id  }}_collapse_button" type="button" class="btn btn-info btn-xs collapse_pane_button float-right "
                             data-toggle="collapse" data-target="#{{ id }}_body"
@@ -246,7 +248,7 @@
                     </div>
                 </div>
 
-                <div class="collapse show" id="{{ id }}_body">
+                <div class="collapse {{ options.collapsed ? 'collapsed' : 'show' }}" id="{{ id }}_body">
 
                     <div class="card-body text-success">
                         {% if options.controls %}
