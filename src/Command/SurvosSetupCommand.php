@@ -168,6 +168,13 @@ services:
       - "@knpu.oauth2.registry"
     tags:
       - { name: knp_menu.menu_builder, method: createMainMenu, alias: landing_menu }
+      - { name: knp_menu.menu_builder, method: createMainMenu, alias: landing_content_menu }
+      
+twig:
+  globals:
+    landing_menu_route: landing_menu
+    landing_content_menu_route: landing_menu
+      
 END;
 
         if ($prefix = $io->ask("Application Menu Class", 'App/Menu/MenuBuilder')) {

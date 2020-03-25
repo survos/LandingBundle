@@ -47,29 +47,31 @@ This bundle was created originally to isolate issues with other bundles and to g
 
 ### Create github Project
 
-Create a repository with no .gitignore and a README.me  clone it
+* Create a repository with no .gitignore and a README.md(?) clone it to some directory and go there.
 
-### Using the bundle
-
-The bundle assumes you've created your project from the base website skeleton
-
-    DIR=jstree-demo && mkdir $DIR && cd $DIR && symfony new --full . --no-git
-
-    git remote add origin git@github.com:survos/flow-demo.git
-    git push -u origin master
+     REPO=location-demo && git clone git@github.com:survos/$REPO.git && cd $REPO 
+     
+* Create the Symfony Skeleton WITHOUT a git repo, then ADD the repo.
+     
+    mv .git .. && symfony new --full . --no-git && mv ../.git .
     
-    
-    DIR=ffmpeg-test && mkdir $DIR && cd $DIR && symfony new --full . 
+Create the project on heroku, after logging in
+
+    heroku create $REPO
+     bin/console make:user User --is-entity --identity-property-name=email --with-password -n
 
     # composer config extra.symfony.allow-contrib true
 
     # interaction is required for the next commands, so if you're cutting and pasting, stop here!
     
     # use the defaults (App\Entity\User)
-    bin/console make:user 
 
     # Create LoginFormAuthenticator
     bin/console make:auth
+       [1] Login Form
+       [2] AppAuthenticator
+       <return>
+       <return>
     
     # Optional, since SurvosBaseBundle has this already, formatted for mobile
     bin/console make:registration-form

@@ -7,7 +7,7 @@
         "ext-json": "*",
         "ext-zip": "*",
         "knplabs/knp-menu": "^3.0",
-        "knplabs/knp-menu-bundle": "^3.0@dev",
+        "knplabs/knp-menu-bundle": "^3.0",
         "knpuniversity/oauth2-client-bundle": "^1.0",
         "meyfa/php-svg": "^0.9.1",
         "symfony/mailer": "*",
