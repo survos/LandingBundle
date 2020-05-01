@@ -25,6 +25,7 @@ class SurvosInitCommand extends Command
     private $kernel;
     private $em;
     private $twig;
+    private $toolsRequested; // array of requested tools
 
     private $appCode;
 
@@ -35,6 +36,12 @@ class SurvosInitCommand extends Command
         'EasyAdminBundle',
         'SurvosWorkflowBundle',
         'UserBundle'
+    ];
+
+    CONST tools = [
+        'heroku',
+        'easyadmin',
+        'all'
     ];
 
     CONST requiredJsLibraries = [
@@ -58,7 +65,7 @@ class SurvosInitCommand extends Command
         $this
             ->setDescription('Basic environment: landing page, heroku, yarn install, sqlite in .env.local, ')
             ->addArgument('arg1', InputArgument::OPTIONAL, 'Argument description')
-            ->addOption('option1', null, InputOption::VALUE_NONE, 'Option description')
+            ->addOption('tools', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'heroku, easyadmin, favicon', ['all'])
         ;
     }
 
@@ -74,9 +81,17 @@ class SurvosInitCommand extends Command
        return $this->appCode;
     }
 
+
+    private function toolRequested($tool)
+    {
+
+    }
+
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->io = $io = new SymfonyStyle($input, $output);
+        $all = in_array('all', $input->getOption('tools'));
+
 
         $this->checkHeroku($io);
 
@@ -92,8 +107,25 @@ class SurvosInitCommand extends Command
 
         // perhaps install required yarn modules here?  Then in setup have the optional ones?
 
+        /*
+         *
+         */
+
         // configure the route
         if ($prefix = $io->ask("Landing Route Prefix", '/')) {
+$config =
+    "
+survos_landing: {path: /, controller: 'Survos\LandingBundle\Controller\LandingController::landing'}
+app_homepage: {path: /, controller: 'Survos\LandingBundle\Controller\LandingController::landing'}
+app_logo: {path: /logo, controller: 'Survos\LandingBundle\Controller\LandingController::logo'}
+app_profile: {path: /profile, controller: 'Survos\LandingBundle\Controller\LandingController::profile'}
+profile: {path: /profile, controller: 'Survos\LandingBundle\Controller\LandingController::profile'}
+logout: {path: /profile, controller: 'Survos\LandingBundle\Controller\LandingController::logout'}
+# required if app_profile is used, since you can change the password from the profile
+app_change_password: {path: /change-password, controller: 'Survos\LandingBundle\Controller\LandingController::changePassword'}
+app_typography: {path: /typography, controller: 'Survos\LandingBundle\Controller\LandingController::typography'}
+survos_landing_credits: {path: /credits, controller: 'Survos\LandingBundle\Controller\LandingController::credits'}
+    ";
             $fn = '/config/routes/survos_landing.yaml';
             $config = [
                 'survos_landing_bundle' => [
@@ -191,9 +223,12 @@ class SurvosInitCommand extends Command
     private function checkHeroku(SymfonyStyle $io)
     {
 
+        $this->io->write("Checking Heroku");
         // @todo: check buildpacks
-        echo exec("heroku buildpacks:add heroku/php");
-        echo exec("heroku buildpacks:add heroku/nodejs");
+        $this->io->writeln(exec("heroku buildpacks:add heroku/php"));
+        $this->io->writeln(exec("heroku buildpacks:add heroku/nodejs"));
+
+        // @todo: heroku config:set APP_ENV=prod, etc.
 
         if (!file_exists($this->projectDir . ($fn = '/Procfile'))) {
            //  $io->warning("Installing base yarn libraries");

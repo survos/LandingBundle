@@ -1,7 +1,7 @@
 {% extends ['base.html.twig', "SurvosLandingBundle::base.html.twig"] %}
 
 {# from https://getbootstrap.com/docs/4.3/examples/jumbotron/ #}
-{% block title "Landing Page" %}
+{% block title "home.title"|trans %}
 
 {% block test_navbar %}
     {% set menuHtml %}
@@ -131,7 +131,7 @@
         </div>
 
         {# no try/catch, so this is now REQUIRED!  Might be better to set this as an option in survos_landing.yaml #}
-        {{ knp_menu_render('landing_content_menu', {currentClass: 'active', template: '@SurvosLanding/landing_menu_blocks.html.twig'}) }}
+        {{ knp_menu_render(landing_content_menu_route, {currentClass: 'active', template: '@SurvosLanding/landing_menu_blocks.html.twig'}) }}
         {% endblock %}
 
     </div>

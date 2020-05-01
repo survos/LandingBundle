@@ -47,13 +47,17 @@ This bundle was created originally to isolate issues with other bundles and to g
 
 ### Create github Project
 
-* Create a repository with no .gitignore and a README.md(?) clone it to some directory and go there.
+* Create a NEW repository 
 
-     REPO=location-demo && git clone git@github.com:survos/$REPO.git && cd $REPO 
+    https://github.com/new
+
+on github.com with no files (no README or license), clone it to some directory and go there.
+
+     REPO=xml-serializer-demo && git clone git@github.com:tacman/$REPO.git && cd $REPO 
      
 * Create the Symfony Skeleton WITHOUT a git repo, then ADD the repo.
      
-    mv .git .. && symfony new --full . --no-git && mv ../.git .
+    mv .git .. && symfony new --full . --no-git  && mv ../.git .
     
 Create the project on heroku, after logging in
 
@@ -66,20 +70,27 @@ Create the project on heroku, after logging in
     
     # use the defaults (App\Entity\User)
 
-    # Create LoginFormAuthenticator
-    bin/console make:auth
-       [1] Login Form
-       [2] AppAuthenticator
-       <return>
-       <return>
+### Create LoginFormAuthenticator
+```bash
+bin/console make:auth
+
+   1 # Login Form Authenticator
+   AppAuthenticator
+   <return> # SecurityController
+   <return> # /logout
+```
     
     # Optional, since SurvosBaseBundle has this already, formatted for mobile
     bin/console make:registration-form
     
     # Now install the Landing (SurvosBase?) bundle
     composer config minimum-stability dev
+    composer req survos/landing-bundle
+    
+    # local dev: create a symlink
 
     composer config repositories.survoslanding '{"type": "path", "url": "../Survos/LandingBundle"}'
+    composer config repositories.geonames '{"type": "path", "url": "../Survos/geonames-bundle"}'
     composer config repositories.phpspreadsheet '{"type": "path", "url": "../Survos/phpspreadsheet-bundle"}'
     
     composer config repositories.multisearch '{"type": "vcs", "url": "git@github.com:tacman/PetkoparaMultiSearchBundle.git"}'
@@ -87,6 +98,8 @@ Create the project on heroku, after logging in
     composer config repositories.captcha '{"type": "vcs", "url": "git@github.com:cyrilverloop/symfony-captcha-bundle.git"}'
 
     composer config repositories.git-survoslanding '{"type": "vcs", "url": "https://github.com/survos/LandingBundle.git"}'
+
+    composer config repositories.git-geonames '{"type": "vcs", "url": "https://github.com/survos/geonames-bundle.git"}'
 
     composer config repositories.flowdemo '{"type": "path", "url": "../Survos/../CraueFormFlowDemoBundle"}'
 
@@ -104,10 +117,12 @@ Create the project on heroku, after logging in
 
 OR
 
-    # composer req survos/landing-bundle
+    composer req survos/landing-bundle
 
     # creates survos_landing.yaml (a recipe would be nicer!)    
     bin/console survos:init
+    
+    # edit .env and set MAILER_URL
     
 # Ugh, still doesn't work, needs a landing menu    
 
@@ -147,13 +162,58 @@ Install the bundle, then go through the setup to add and configure the tools.
     composer req survos/landing-bundle
     
     yarn install 
+    
     xterm -e "yarn run encore dev-server" &
     
+    composer req "kevinpapst/adminlte-bundle"
     bin/console survos:init
 
     bin/console survos:config --no-interaction
     bin/console doctrine:schema:update --force
     
+#### survos:init
+
+First time setup, downloads jquery, bootstrap, etc.
+Also _modifies_ some yaml files, and creates the first menu.  
+
+```yaml
+# config/packages/admin_lte.yaml
+admin_lte:
+    knp_menu:
+        enable: true
+
+    routes:
+        adminlte_welcome: app_homepage
+        adminlte_login: app_login
+        adminlte_profile: app_profile
+```
+
+@todo: Generate this Controller and templates?
+
+```yaml
+# config/routes/survos_landing.yaml
+survos_landing: {path: /, controller: 'Survos\LandingBundle\Controller\LandingController::landing'}
+# app_homepage: {path: /, controller: 'Survos\LandingBundle\Controller\LandingController::landing'}
+app_logo: {path: /logo, controller: 'Survos\LandingBundle\Controller\LandingController::logo'}
+app_profile: {path: /profile, controller: 'Survos\LandingBundle\Controller\LandingController::profile'}
+# profile: {path: /profile, controller: 'Survos\LandingBundle\Controller\LandingController::profile'}
+# logout: {path: /logout, controller: 'Survos\LandingBundle\Controller\LandingController::logout'}
+# required if app_profile is used, since you can change the password from the profile
+app_change_password: {path: /change-password, controller: 'Survos\LandingBundle\Controller\LandingController::changePassword'}
+```
+
+
+{% extends '@AdminLTE/layout/default-layout.html.twig' %}
+{% block page_content %}
+{{ block('body') }}
+{% endblock %}
+
+{% block logo_mini %}<b>KPA</b>{% endblock %}
+{% block logo_large '<b>KPA</b> Admin' %}
+
+{% block page_title 'KPA Admin' %}
+{% block page_subtitle 'Songs and Music!' %}
+
 #### Now install some bundles!
      
     See the details at [Recommended Bundles](docs/recommended-bundles.md)
@@ -165,6 +225,69 @@ If you chosen to integrate the userbundle, update the schema and add an admin
     symfony server:start --no-tls
     
 When finished, the application will have a basic landing page with top navigation, optionally including login/registration pages.  Logged in users with ROLE_ADMIN will also (optionally) have links to easyadmin and api-platform.  
+
+### Api Platform
+
+@todo: put this in a survos:setup command.
+
+* Expose the API routes (for jsRoutingBundle), and 
+
+```yaml
+# config/routes/api_platform.yaml
+api_platform:
+    resource: .
+    type: api_platform
+    prefix: /api
+    options:
+        expose: true
+```
+
+Create resources.yaml to store the configuration
+```yaml
+# api/config/api_platform/resources.yaml
+App\Entity\User: ~
+App\Entity\Location:
+  shortName: 'Location'                   # optional
+  description: 'A place within a building where inventory item is physically located.' # optional
+  attributes:                          # optional
+    pagination_items_per_page: 30   # optional
+    normalization_context:
+      groups: ['jstree']
+    denormalization_context:
+      groups: ['jstree']
+```
+
+Add the resources.yaml directory to the mapping paths
+
+```yaml
+# config/packages/api_platform.yaml
+api_platform:
+    mapping:
+        paths:
+            - '%kernel.project_dir%/src/Entity'
+            - '%kernel.project_dir%/config/api_platform' # yaml or xml directory configuration]
+    patch_formats:
+        json: ['application/merge-patch+json']
+    swagger:
+        versions: [3]
+```
+
+Configure the serializer (may need to create the directory)
+
+```yaml
+# config/serializer/serialization.yaml
+App\Entity\User:
+  attributes:
+    id:
+      groups: ['Default']
+    email:
+      groups: ['Default']
+
+App\Entity\Song:
+  attributes:
+    title:
+      groups: ['Default']
+```
 
 ### Customizing the bundle
 
