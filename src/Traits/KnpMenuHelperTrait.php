@@ -1,0 +1,82 @@
+<?php // Simplies the construction of menu items,
+namespace Survos\LandingBundle\Traits;
+
+use Knp\Menu\ItemInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
+
+trait KnpMenuHelperTrait
+{
+    private function addMenuItem(ItemInterface $menu, array $options): ItemInterface
+    {
+        $options = $this->menuOptions($options);
+        // must pass in either route or menu_code
+        if (!$options['menu_code']) {
+            $options['menu_code'] = $options['route'];
+        }
+        $child = $menu->addChild($options['menu_code'], $options);
+        if ($icon = $options['icon']) {
+            $child->setLabelAttribute('icon', $icon);
+        }
+        return $child;
+
+    }
+    private function menuOptions(array $options, array $extra = []): array
+    {
+        // idea: make the label a . version of the route, e.g. project_show could be project.show
+        // we could also set a default icon for things like edit, show
+        $options = (new OptionsResolver())
+            ->setDefaults([
+                'menu_code' => null,
+                'route' => null,
+                'rp' => null,
+                '_fragment' => null,
+                'label' => null,
+                'icon' => null,
+                'description' => null,
+                'attributes' => []
+            ])->resolve($options);
+
+        // rename rp
+        if (is_object($options['rp'])) {
+            $options['routeParameters'] = $options['rp']->getRp();
+            $options['icon'] = constant(get_class($options['rp']) . '::ICON');
+        } elseif (is_array($options['rp'])) {
+            $options['routeParameters'] = $options['rp'];
+        }
+        unset($options['rp']);
+
+        // if label is exactly true then automate the label from the route
+        if ($options['label'] === true) {
+            $options['label'] = str_replace('_', '.', $options['route']);
+        }
+
+        // we could pass in a hash route and hash params instead.
+        if ($fragment = $options['_fragment']) {
+            $options['uri'] = '#' . $fragment;
+            unset($options['route']);
+            //
+        }
+
+        // default icons, should be configurable in survos_landing.yaml
+        if ($options['icon'] === null) {
+            foreach ([
+                         'show' => 'fas fa-eye',
+                         'edit' => 'fas fa-wrench'
+                     ] as $regex=>$icon) {
+                if (preg_match("|$regex|", $options['route'])) {
+                    $options['icon'] = $icon;
+                }
+            }
+        }
+
+        // move the icon to attributes, where it belongs
+        if ($options['icon']) {
+            $options['attributes']['icon'] = $options['icon'];
+            $options['label_attributes']['icon'] = $options['icon'];
+            // unset($options['icon']);
+        }
+        return $options;
+
+    }
+
+}
