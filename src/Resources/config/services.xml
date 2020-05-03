@@ -39,6 +39,18 @@
             <tag name="console.command" />
         </service>
 
+        <service id="maker.param_converter" class="Survos\LandingBundle\Renderer\ParamConverterRenderer" public="false">
+            <argument type="service" id="maker.generator"/>
+        </service>
+
+        <service id="Survos\LandingBundle\Maker\MakeParamConverter"
+                 class="Survos\LandingBundle\Maker\MakeParamConverter" public="false">
+            <argument type="service" id="maker.doctrine_helper" />
+            <argument type="service" id="maker.param_converter" />
+            <argument type="service" id="maker.renderer.form_type_renderer" />
+            <tag name="maker.command" />
+        </service>
+
         <service id="Survos\LandingBundle\Command\UserCreateCommand" class="Survos\LandingBundle\Command\UserCreateCommand" public="false">
             <argument type="service" id="security.password_encoder" />
             <argument type="service" id="security.user.provider.concrete.app_user_provider"></argument>

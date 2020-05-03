@@ -166,7 +166,11 @@ Install the bundle, then go through the setup to add and configure the tools.
     xterm -e "yarn run encore dev-server" &
     
     composer req "kevinpapst/adminlte-bundle"
+    bin/console make:subscriber KnpMenuSubscriber "KevinPapst\AdminLTEBundle\Event\KnpMenuEvent"
+    
     bin/console survos:init
+    
+    
 
     bin/console survos:config --no-interaction
     bin/console doctrine:schema:update --force
