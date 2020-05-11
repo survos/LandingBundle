@@ -10,6 +10,7 @@
         <service id="survos_landing_bundle.landing_service" class="Survos\LandingBundle\LandingService" >
             <argument type="service" id="?"/>
             <argument type="service" id="oauth2.registry"/>
+            <argument type="service" id="knpu.oauth2.provider_factory"/>
         </service>
 
         <service id="Survos\LandingBundle\Security\AppEmailAuthenticator" alias="survos_landing_bundle.app_email_authenticator" public="true"/>
@@ -39,6 +40,11 @@
             <tag name="console.command" />
         </service>
 
+        <service id="Survos\LandingBundle\Command\SurvosBuildDocsCommand" class="Survos\LandingBundle\Command\SurvosBuildDocsCommand" public="false">
+            <argument type="service" id="twig"/>
+            <tag name="console.command" />
+        </service>
+
         <service id="maker.param_converter" class="Survos\LandingBundle\Renderer\ParamConverterRenderer" public="false">
             <argument type="service" id="maker.generator"/>
         </service>
@@ -47,28 +53,34 @@
                  class="Survos\LandingBundle\Maker\MakeParamConverter" public="false">
             <argument type="service" id="maker.doctrine_helper" />
             <argument type="service" id="maker.param_converter" />
+            <tag name="maker.command" />
+        </service>
+
+        <service id="Survos\LandingBundle\Maker\MakeCrud"
+                 class="Survos\LandingBundle\Maker\MakeCrud" public="false">
+            <argument type="service" id="maker.doctrine_helper" />
             <argument type="service" id="maker.renderer.form_type_renderer" />
             <tag name="maker.command" />
         </service>
 
         <service id="Survos\LandingBundle\Command\UserCreateCommand" class="Survos\LandingBundle\Command\UserCreateCommand" public="false">
             <argument type="service" id="security.password_encoder" />
-            <argument type="service" id="security.user.provider.concrete.app_user_provider"></argument>
-            <argument type="service" id="doctrine.orm.entity_manager"></argument>
+            <argument type="service" id="security.user.provider.concrete.app_user_provider" />
+            <argument type="service" id="doctrine.orm.entity_manager" />
             <tag name="console.command" />
         </service>
 
         <service id="Survos\LandingBundle\Command\SurvosSetupCommand" class="Survos\LandingBundle\Command\SurvosSetupCommand" public="false">
-            <argument type="service" id="kernel"></argument>
-            <argument type="service" id="doctrine.orm.entity_manager"></argument>
-            <argument type="service" id="twig"></argument>
+            <argument type="service" id="kernel" />
+            <argument type="service" id="doctrine.orm.entity_manager" />
+            <argument type="service" id="twig" />
             <tag name="console.command" />
         </service>
 
         <service id="Survos\LandingBundle\Command\SurvosInitCommand" class="Survos\LandingBundle\Command\SurvosInitCommand" public="false">
-            <argument type="service" id="kernel"></argument>
-            <argument type="service" id="doctrine.orm.entity_manager"></argument>
-            <argument type="service" id="twig"></argument>
+            <argument type="service" id="kernel" />
+            <argument type="service" id="doctrine.orm.entity_manager" />
+            <argument type="service" id="twig" />
             <tag name="console.command" />
         </service>
 
