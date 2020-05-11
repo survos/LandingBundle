@@ -4,20 +4,24 @@ namespace Survos\LandingBundle\Traits;
 use Knp\Menu\ItemInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use function Symfony\Component\String\u;
 
 trait KnpMenuHelperTrait
 {
     private function addMenuItem(ItemInterface $menu, array $options): ItemInterface
     {
         $options = $this->menuOptions($options);
-        // must pass in either route or menu_code
+        // must pass in either route, icon or menu_code
+
         if (!$options['menu_code']) {
-            $options['menu_code'] = $options['route'];
+            $options['menu_code'] = $options['route'] ?: (u($options['label'] ?: $options['icon'])->snake() );
         }
+
         $child = $menu->addChild($options['menu_code'], $options);
         if ($icon = $options['icon']) {
             $child->setLabelAttribute('icon', $icon);
         }
+
         return $child;
 
     }
@@ -40,11 +44,20 @@ trait KnpMenuHelperTrait
         // rename rp
         if (is_object($options['rp'])) {
             $options['routeParameters'] = $options['rp']->getRp();
-            $options['icon'] = constant(get_class($options['rp']) . '::ICON');
+            $iconConstant = get_class($options['rp']) . '::ICON';
+            $options['icon'] = defined($iconConstant) ? constant($iconConstant) : 'fas fa-database'; // generic database entity
         } elseif (is_array($options['rp'])) {
             $options['routeParameters'] = $options['rp'];
         }
+        // if (isset($options['rp'])) { dd($options);}
         unset($options['rp']);
+        if (empty($options['label']) && $options['route']) {
+            $options['label'] = u($options['route'])->replace('_', ' ')->title(true)->afterLast(' ')->toString();
+        }
+
+        if (empty($options['label']) && $options['menu_code']) {
+            $options['label'] = u($options['menu_code'])->replace('.', ' ')->title(true)->toString();
+        }
 
         // if label is exactly true then automate the label from the route
         if ($options['label'] === true) {
