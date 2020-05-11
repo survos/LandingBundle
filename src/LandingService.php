@@ -3,6 +3,7 @@
 namespace Survos\LandingBundle;
 
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
+use KnpU\OAuth2ClientBundle\DependencyInjection\ProviderFactory;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Yaml\Yaml;
 
@@ -15,11 +16,16 @@ class LandingService
      * @var ClientRegistry
      */
     private $clientRegistry;
+    /**
+     * @var ProviderFactory
+     */
+    private $provider;
 
-    public function __construct(array $entityClasses, ClientRegistry $clientRegistry)
+    public function __construct(array $entityClasses, ClientRegistry $clientRegistry, ProviderFactory $provider)
     {
         $this->entityClasses = $entityClasses;
         $this->clientRegistry = $clientRegistry;
+        $this->provider = $provider;
     }
 
     public function getEntities()
@@ -34,9 +40,15 @@ class LandingService
     // hack to get client id
     private function accessProtected($obj, $prop) {
         $reflection = new \ReflectionClass($obj);
-        $property = $reflection->getProperty($prop);
-        $property->setAccessible(true);
-        return $property->getValue($obj);
+        // dump($obj, $prop);
+        try {
+            $property = $reflection->getProperty($prop);
+            $property->setAccessible(true);
+            return $property->getValue($obj);
+        } catch (\Exception $e) {
+            // log the error?
+            return false;
+        }
     }
 
     public function getOauthClients($all = false): array {
@@ -50,13 +62,14 @@ class LandingService
 
 
         return array_combine($keys, array_map(function ($key) use ($providers) {
-            try {
                 $client = $this->clientRegistry->getClient($key);
                 $provider = $providers[$key];
                 $clientId = $this->accessProtected($client->getOAuth2Provider(), 'clientId');
                 $type = $this->accessProtected($client->getOAuth2Provider(), 'type');
+            try {
             } catch (\Exception $e) {
                 $client = false;
+                $provider = false;
             }
             // $extra = $this->accessProtected($provider, 'extrias');
             return [
