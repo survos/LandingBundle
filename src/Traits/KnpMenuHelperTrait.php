@@ -8,7 +8,7 @@ use function Symfony\Component\String\u;
 
 trait KnpMenuHelperTrait
 {
-    private function addMenuItem(ItemInterface $menu, array $options): ItemInterface
+    private function addMenuItem(ItemInterface $menu, array $options, array $extra=[]): ItemInterface
     {
         $options = $this->menuOptions($options);
         // must pass in either route, icon or menu_code
@@ -21,6 +21,10 @@ trait KnpMenuHelperTrait
         if ($icon = $options['icon']) {
             $child->setLabelAttribute('icon', $icon);
         }
+        if (!empty($extra['safe_label'])) {
+            $child->setExtra('safe_label', true);
+        }
+
 
         return $child;
 
@@ -56,7 +60,7 @@ trait KnpMenuHelperTrait
         }
 
         if (empty($options['label']) && $options['menu_code']) {
-            $options['label'] = u($options['menu_code'])->replace('.', ' ')->title(true)->toString();
+            $options['label'] = u($options['menu_code'])->replace('.', ' ')->title(true)->replace('_header', '')->toString();
         }
 
         // if label is exactly true then automate the label from the route
