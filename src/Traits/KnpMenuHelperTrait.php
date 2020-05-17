@@ -13,11 +13,13 @@ trait KnpMenuHelperTrait
         $options = $this->menuOptions($options);
         // must pass in either route, icon or menu_code
 
-        if (!$options['menu_code']) {
-            $options['menu_code'] = $options['route'] ?: (u($options['label'] ?: $options['icon'])->snake() );
+        if (!$options['id']) {
+            $options['id'] = $options['route'] ?: (u($options['label'] ?: $options['icon'])->snake() );
         }
 
-        $child = $menu->addChild($options['menu_code'], $options);
+        $child = $menu->addChild($options['id'], $options);
+        $child->setChildrenAttribute('class', 'branch');
+
         if ($icon = $options['icon']) {
             $child->setLabelAttribute('icon', $icon);
         }
@@ -35,7 +37,9 @@ trait KnpMenuHelperTrait
         // we could also set a default icon for things like edit, show
         $options = (new OptionsResolver())
             ->setDefaults([
+                // deprecated
                 'menu_code' => null,
+                'id' => null,
                 'route' => null,
                 'rp' => null,
                 '_fragment' => null,
@@ -92,6 +96,10 @@ trait KnpMenuHelperTrait
             $options['attributes']['icon'] = $options['icon'];
             $options['label_attributes']['icon'] = $options['icon'];
             // unset($options['icon']);
+        }
+
+        if (!$options['id']) {
+            $options['id'] = $options['menu_code'];
         }
         return $options;
     }

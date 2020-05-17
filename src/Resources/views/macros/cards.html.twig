@@ -1,4 +1,4 @@
-
+{# some bootstrap-4 utilities for page elements.  In bootstrap3, these were panels.  #}
 
 {% macro menu_card(menuCode, options) %}
     {% set o = optionsResolver({
@@ -178,7 +178,7 @@
 
                 <div class="card-header bg-info text-white border-success">
 
-                    <div class="xxfloat-right card-title">
+                    <div class="float-right card-title">
                         {% if title %}
                             <h5 style="display: inline;" >{{ title|raw }}</h5>
                         {% endif %}
@@ -236,7 +236,7 @@
 
 
                 {% if options.collapsable %}
-                    <button id="{{ id  }}_collapse_button" type="button" class="btn btn-info btn-xs collapse_pane_button float-right "
+                    <button id="{{ id  }}_collapse_button" type="button" class="btn btn-info btn-xs collapse_pane_button pull-right "
                             data-toggle="collapse" data-target="#{{ id }}_body"
                             title="Collapse"
                             data-tour-placement="left"

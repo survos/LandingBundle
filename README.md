@@ -87,6 +87,10 @@ bin/console make:auth
     composer config minimum-stability dev
     composer req survos/landing-bundle
     
+        composer config repositories.adminlte '{"type": "vcs", "url": "git@github.com:tacman/AdminLTEBundle.git"}'
+
+        composer config repositories.blog '{"type": "vcs", "url": "git@github.com:survos/OdiseoBlogBundle.git"}'
+
     # local dev: create a symlink
 
     composer config repositories.survoslanding '{"type": "path", "url": "../Survos/LandingBundle"}'
